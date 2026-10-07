@@ -4,6 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Polaris</title>
+<meta name="theme-color" content="#EFE9DD">
+<meta name="application-name" content="Polaris">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Polaris">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icono.png">
+<link rel="apple-touch-icon" href="icono.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -252,7 +261,7 @@
   #view-pdf .grid.shelf .book{--spine:var(--pdf)}
   #view-word .grid.shelf .book{--spine:var(--word)}
 
-  .book .edesc, .book .echips, .book .ecta, .book .eyoutube, .book .echapters, .book .ecover-btn, .book .eherowrap{display:none}
+  .book .edesc, .book .echips, .book .ecta, .book .eyoutube, .book .echapters, .book .ecover-btn, .book .eherowrap, .book .eprog{display:none}
   .book .main-text{display:contents}
   .book .cover{border-radius:4px; overflow:hidden; flex-shrink:0}
   .book .cover:not(.swatch){width:100%; aspect-ratio:2/3; max-height:210px; background:var(--line)}
@@ -322,6 +331,7 @@
     display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;
     font-size:.85rem; line-height:1.5; color:rgba(255,255,255,.88);
   }
+  .grid.editorial .book .eprog{display:block; margin-top:10px; font-size:.75rem; font-weight:600; color:rgba(255,255,255,.82)}
   .grid.editorial .book .echapters{
     display:flex; flex-direction:row; flex-wrap:wrap; justify-content:center; gap:5px 14px; width:100%;
   }
@@ -349,7 +359,10 @@
   .reader{
     position:fixed; inset:0; background:var(--paper); z-index:10;
     display:flex; flex-direction:column; overflow:hidden;
+    --paper:#F0DEC6; --ink:#4E3C2A; --ink-soft:#8A7558; --line:#D8C2A0; --card:#E8D4B4;
+    color:var(--ink);
   }
+  .reader-main{position:relative; flex:1; min-height:0; display:flex; flex-direction:column; justify-content:center}
   .reader.hidden{display:none}
   .reader-bar{
     display:flex; align-items:center; gap:12px; padding:calc(env(safe-area-inset-top,0px) + 12px) 16px 12px;
@@ -360,6 +373,10 @@
     color:var(--ink); font-size:.85rem; cursor:pointer;
   }
   .reader-bar span{font-family:'Source Serif 4',serif; font-size:.95rem; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  #closeReader{
+    border:none; background:none; width:auto; height:auto; padding:2px 10px 2px 0;
+    font-size:1.6rem; line-height:1; flex-shrink:0; color:var(--ink);
+  }
   #readerBody{flex:1; min-height:0; overflow:auto; padding:0}
   #readerBody.pad{padding:20px; max-width:720px; margin:0 auto}
   #readerBody.doc-view{
@@ -371,27 +388,40 @@
   .hide{display:none !important}
   #readerBody.paged{position:relative; min-height:0; overflow:hidden; padding:0}
   #readerBody.paged .pagewrap{
-    position:absolute; left:0; right:0; top:0; padding:30px 22px; box-sizing:border-box;
-    transition:transform .32s ease;
+    position:absolute; left:0; right:0; top:0; padding:0 26px; box-sizing:border-box;
+    transition:transform .3s ease; text-align:justify; -webkit-hyphens:auto; hyphens:auto; color:var(--ink);
   }
-  #readerBody.paged.doc-view{font-size:1.02rem; line-height:1.7}
+  #readerBody.paged.doc-view{font-size:1.02rem}
+  #readerBody.paged .pagewrap > div:not(.book-info){display:flow-root}
+  #readerBody.paged .pagewrap p{margin:0; text-indent:1.4em}
+  #readerBody.paged .pagewrap h1, #readerBody.paged .pagewrap h2, #readerBody.paged .pagewrap h3,
+  #readerBody.paged .pagewrap h4, #readerBody.paged .pagewrap h5, #readerBody.paged .pagewrap h6{
+    font-size:1.2em; line-height:inherit; margin:var(--L,1.7em) 0; text-indent:0; text-align:left; font-weight:700;
+  }
+  #readerBody.paged .pagewrap blockquote, #readerBody.paged .pagewrap ul, #readerBody.paged .pagewrap ol{margin:0; padding-left:1.3em}
+  #readerBody.paged .pagewrap hr{margin:var(--L,1.7em) 0; border:none; border-top:1px solid var(--line)}
+  #readerBody.paged .pagewrap .imgbox{display:block; text-align:center; text-indent:0}
+  #readerBody.paged .pagewrap .imgbox img{display:inline-block; vertical-align:top; max-width:100%; width:auto; height:auto}
+  #readerBody.paged .pagewrap .imgbox svg{display:inline-block; vertical-align:top; max-width:100%}
+  #readerBody.paged .pagewrap .book-info{margin:0}
+  #readerBody.paged .pagewrap .book-info p{text-indent:0; text-align:left}
   #readerBody.pdf-page{display:flex; align-items:center; justify-content:center; overflow:hidden; padding:14px; box-sizing:border-box}
   #readerBody.pdf-page canvas{max-width:100%; max-height:100%}
-  .page-nav{position:absolute; inset:0; top:auto; bottom:0; height:80%; display:flex; z-index:3}
-  .page-nav .zone{flex:1}
+  .page-nav{position:absolute; inset:0; display:flex; justify-content:space-between; z-index:3; pointer-events:none}
+  .page-nav .zone{width:16%; pointer-events:auto}
   .page-arrow{
     position:absolute; top:50%; transform:translateY(-50%); z-index:4;
-    background:rgba(0,0,0,.32); color:#fff; border:none; border-radius:50%;
-    width:34px; height:34px; display:flex; align-items:center; justify-content:center;
-    font-size:1.1rem; cursor:pointer;
+    background:rgba(78,60,42,.22); color:#fff; border:none; border-radius:50%;
+    width:22px; height:22px; display:flex; align-items:center; justify-content:center;
+    font-size:.9rem; line-height:1; padding:0; cursor:pointer; opacity:.65;
   }
-  .page-arrow.prev{left:8px}
-  .page-arrow.next{right:8px}
-  .page-counter{
-    position:absolute; left:50%; bottom:calc(10px + env(safe-area-inset-bottom,0px)); transform:translateX(-50%);
-    background:rgba(0,0,0,.55); color:#fff; font-size:.72rem; padding:4px 12px; border-radius:12px; z-index:4;
-    pointer-events:none;
-  }
+  .page-arrow.prev{left:1px}
+  .page-arrow.next{right:1px}
+  .reader-foot{flex-shrink:0; padding:8px 26px calc(10px + env(safe-area-inset-bottom,0px)); text-align:center}
+  .foot-track{position:relative; height:2px; background:var(--line); border-radius:2px; margin:6px 4px 9px}
+  .foot-fill{position:absolute; left:0; top:0; bottom:0; width:0; background:var(--ink-soft); border-radius:2px}
+  .foot-dot{position:absolute; top:50%; left:0; width:9px; height:9px; border-radius:50%; background:var(--ink); transform:translate(-50%,-50%)}
+  .foot-text{font-size:.76rem; color:var(--ink-soft); letter-spacing:.03em}
   .bm-panel{
     position:absolute; right:12px; top:calc(env(safe-area-inset-top,0px) + 54px); z-index:5;
     width:min(260px,80vw); max-height:60vh; overflow-y:auto; background:var(--card);
@@ -543,20 +573,25 @@
 
 <div class="reader hidden" id="reader">
   <div class="reader-bar">
-    <button id="closeReader">← Cerrar</button>
+    <button id="closeReader" title="Salir" aria-label="Salir">←</button>
     <span id="readerTitle"></span>
     <button id="highlightBtn" class="hidden-inline" title="Resaltar selección">🖍️</button>
     <button id="bookmarkAddBtn" title="Agregar marcador">🔖</button>
     <button id="bookmarkListBtn" title="Ver marcadores">📑</button>
   </div>
-  <div id="readerBody"></div>
-  <div class="page-nav hide" id="pageNav">
-    <div class="zone" id="zonePrev"></div>
-    <div class="zone" id="zoneNext"></div>
+  <div class="reader-main" id="readerMain">
+    <div id="readerBody"></div>
+    <div class="page-nav hide" id="pageNav">
+      <div class="zone" id="zonePrev"></div>
+      <div class="zone" id="zoneNext"></div>
+    </div>
+    <button class="page-arrow prev hide" id="arrowPrev">‹</button>
+    <button class="page-arrow next hide" id="arrowNext">›</button>
   </div>
-  <button class="page-arrow prev hide" id="arrowPrev">‹</button>
-  <button class="page-arrow next hide" id="arrowNext">›</button>
-  <div class="page-counter hide" id="pageCounter"></div>
+  <div class="reader-foot hide" id="readerFoot">
+    <div class="foot-track"><div class="foot-fill" id="footFill"></div><div class="foot-dot" id="footDot"></div></div>
+    <div class="foot-text" id="pageCounter">Página 1</div>
+  </div>
   <div class="bm-panel hidden" id="bmPanel">
     <div class="bm-panel-head"><strong>Marcadores</strong><button id="closeBmPanel">✕</button></div>
     <div id="bmList"></div>
@@ -913,6 +948,14 @@ async function enrich(rec){
   rec.enriched = res.reached;
   try{ rec.coverColor = await extractCoverColor(rec); }catch(e){ rec.coverColor = null; }
   if(deletedIds.has(rec.id)) return;
+  try{
+    const fresh = (await dbAllRaw()).find(r=>r.id===rec.id);
+    if(fresh){
+      ['bookmarks','highlights','favorite','read','trashed','trashedAt','progress'].forEach(k=>{
+        if(fresh[k]!==undefined) rec[k]=fresh[k]; else delete rec[k];
+      });
+    }
+  }catch(e){}
   await dbAdd(rec);
   renderShelf(rec.section);
 }
@@ -1014,6 +1057,7 @@ async function renderShelf(section){
     const card = document.createElement('div');
     card.className='book';
     if(item.coverColor) card.style.setProperty('--spine', item.coverColor);
+    const pf = readProgress(item);
     const del = document.createElement('button');
     del.className='del'; del.title='Mover a la papelera'; del.setAttribute('aria-label','Mover a la papelera'); del.textContent='✕';
     del.addEventListener('click',async (ev)=>{
@@ -1075,6 +1119,10 @@ async function renderShelf(section){
     if(item.description){
       const ed = document.createElement('div'); ed.className='edesc'; ed.textContent = item.description; mainText.appendChild(ed);
     }
+    if(pf > 0.005){
+      const pr = document.createElement('div'); pr.className='eprog';
+      pr.textContent = 'Continuar leyendo · '+Math.round(pf*100)+'%'; mainText.appendChild(pr);
+    }
 
     card.append(bg, eherowrap, scrim, del, actions, cover, mainText);
     if(item.author){
@@ -1095,7 +1143,7 @@ async function renderShelf(section){
     card.appendChild(coverBtn);
 
     const meta = document.createElement('div');
-    meta.className='meta'; meta.textContent = formatSize(item.size);
+    meta.className='meta'; meta.textContent = formatSize(item.size) + (pf > 0.005 ? ' · '+Math.round(pf*100)+'% leído' : '');
     card.appendChild(meta);
     card.addEventListener('click',()=>openReader(item));
     grid.appendChild(card);
@@ -1105,144 +1153,232 @@ async function renderShelf(section){
 // ---- Reader ----
 const readerEl = document.getElementById('reader');
 const readerBody = document.getElementById('readerBody');
+const readerMain = document.getElementById('readerMain');
 const readerTitle = document.getElementById('readerTitle');
 const bmPanel = document.getElementById('bmPanel');
 const highlightBtn = document.getElementById('highlightBtn');
 const pageNav = document.getElementById('pageNav');
 const arrowPrev = document.getElementById('arrowPrev');
 const arrowNext = document.getElementById('arrowNext');
+const readerFoot = document.getElementById('readerFoot');
 const pageCounter = document.getElementById('pageCounter');
-document.getElementById('closeReader').addEventListener('click',closeReader);
+const footFill = document.getElementById('footFill');
+const footDot = document.getElementById('footDot');
+document.getElementById('closeReader').addEventListener('click', closeReader);
 
 let currentItem = null;
-let progressTimer = null;
 let pdfDoc = null, pdfPageNum = 1;
+let pageWrapEl = null, colPage = 0, pageStep = 0, lineH = 0;
+let progressReady = false;
+let hlReady = false;
 
-// ---- Paginación (EPUB y Word): el texto fluye normal dentro de un panel que se desliza
-// exactamente una pantalla por toque. Más confiable que las columnas de CSS, que a veces
-// perdían o atascaban contenido (sobre todo con imágenes de por medio).
-let pageWrapEl = null;
-let colPage = 0;
+// ---- Dónde ibas: se guarda en localStorage (inmediato, no depende de la base de datos) ----
+const progKey = id => 'polaris-progress:'+id;
+function readProgress(item){
+  try{
+    const v = JSON.parse(localStorage.getItem(progKey(item.id)));
+    if(v && typeof v.frac==='number') return v.frac;
+  }catch(e){}
+  return (typeof item.progress==='number') ? item.progress : 0;
+}
+function writeProgress(item, frac){
+  item.progress = frac;
+  try{ localStorage.setItem(progKey(item.id), JSON.stringify({frac, t:Date.now()})); }catch(e){}
+}
+function currentFrac(){
+  if(currentItem && currentItem.section==='pdf' && pdfDoc) return pdfDoc.numPages>1 ? (pdfPageNum-1)/(pdfDoc.numPages-1) : 0;
+  if(pageWrapEl){ const t = colTotal(); return t>1 ? colPage/(t-1) : 0; }
+  return 0;
+}
+function saveProgressLight(){
+  if(currentItem && progressReady) writeProgress(currentItem, currentFrac());
+}
+function saveProgressNow(){
+  if(!currentItem || !progressReady) return Promise.resolve();
+  saveProgressLight();
+  return dbAdd(currentItem).catch(()=>{});
+}
+// Respaldo: guardar también si el celular cambia de app, apaga pantalla o se cierra la pestaña
+document.addEventListener('visibilitychange', ()=>{ if(document.hidden) saveProgressNow(); });
+window.addEventListener('pagehide', saveProgressNow);
+
+// ---- Páginas (EPUB y Word) ----
+// El texto fluye normal sobre una cuadrícula de líneas; cada "hoja" mide exactamente un
+// múltiplo de línea, así ninguna línea queda cortada a la mitad entre una hoja y otra.
 function colTotal(){
-  if(!pageWrapEl) return 1;
-  const h = readerBody.clientHeight || 1;
-  return Math.max(1, Math.ceil(pageWrapEl.scrollHeight / h));
+  if(!pageWrapEl || !pageStep) return 1;
+  return Math.max(1, Math.ceil((pageWrapEl.scrollHeight - 1) / pageStep));
 }
 function colGoTo(idx){
-  if(!pageWrapEl) return;
-  const total = colTotal();
-  colPage = Math.max(0, Math.min(total-1, idx));
-  const h = readerBody.clientHeight || 1;
-  pageWrapEl.style.transform = 'translateY(-'+(colPage*h)+'px)';
+  if(!pageWrapEl || !pageStep) return;
+  colPage = Math.max(0, Math.min(colTotal()-1, idx));
+  pageWrapEl.style.transform = 'translateY(-'+(colPage*pageStep)+'px)';
   updatePageCounter();
+}
+function snapBlock(el){
+  el.style.minHeight = '0px';
+  const h = el.getBoundingClientRect().height;
+  el.style.minHeight = (Math.max(1, Math.ceil(h/lineH - 0.02)) * lineH)+'px';
+}
+function layoutPages(){
+  if(!pageWrapEl) return;
+  const fs = parseFloat(getComputedStyle(pageWrapEl).fontSize) || 16;
+  lineH = Math.round(fs * 1.75);
+  pageWrapEl.style.lineHeight = lineH+'px';
+  pageWrapEl.style.setProperty('--L', lineH+'px');
+  const avail = Math.max(readerMain.clientHeight - 36, lineH*4);
+  const rows = Math.max(4, Math.floor(avail / lineH));
+  pageStep = rows * lineH;
+  readerBody.style.flex = '0 0 auto';
+  readerBody.style.height = pageStep+'px';
+  pageWrapEl.querySelectorAll('img, svg').forEach(el=>{
+    if(el.closest('.imgbox') || el.closest('.book-info')) return;
+    const box = document.createElement('div'); box.className='imgbox';
+    el.parentNode.insertBefore(box, el); box.appendChild(el);
+  });
+  pageWrapEl.querySelectorAll('.imgbox').forEach(box=>{
+    box.firstElementChild.style.maxHeight = (pageStep - lineH)+'px';
+    snapBlock(box);
+  });
+  // Una imagen nunca se parte entre dos hojas: si no cabe en lo que queda de la hoja, pasa entera a la siguiente
+  Array.from(pageWrapEl.children).forEach(ch=>{
+    ch.querySelectorAll('.imgbox').forEach(box=>{
+      box.style.marginTop = '0px';
+      const top = box.getBoundingClientRect().top - pageWrapEl.getBoundingClientRect().top;
+      const h = box.getBoundingClientRect().height;
+      const rem = ((top % pageStep) + pageStep) % pageStep;
+      if(h <= pageStep + 1 && rem + h > pageStep + 1 && pageStep - rem > 1.5){
+        box.style.marginTop = (pageStep - rem)+'px';
+      }
+    });
+    snapBlock(ch);
+  });
+}
+async function settleMedia(){
+  if(!pageWrapEl) return;
+  pageWrapEl.offsetHeight; // fuerza el cálculo para que empiecen a cargar las fuentes
+  const waits = Array.from(pageWrapEl.querySelectorAll('img')).filter(i=>!i.complete)
+    .map(i=>new Promise(r=>{ i.addEventListener('load', r, {once:true}); i.addEventListener('error', r, {once:true}); }));
+  await Promise.race([Promise.all(waits), new Promise(r=>setTimeout(r,2000))]);
+  if(document.fonts && document.fonts.ready){
+    await Promise.race([document.fonts.ready, new Promise(r=>setTimeout(r,1200))]);
+  }
+}
+function relayout(){
+  if(!pageWrapEl) return;
+  const frac = currentFrac();
+  layoutPages();
+  colGoTo(Math.round(frac * (colTotal()-1)));
+}
+window.addEventListener('resize', ()=>{ if(pageWrapEl && progressReady) relayout(); });
+if(document.fonts && document.fonts.addEventListener){
+  document.fonts.addEventListener('loadingdone', ()=>{ if(pageWrapEl && progressReady) relayout(); });
 }
 
 function updatePageCounter(){
-  if(!currentItem){ pageCounter.classList.add('hide'); return; }
-  if(currentItem.section==='pdf' && pdfDoc){
-    pageCounter.textContent = 'Página '+pdfPageNum+' de '+pdfDoc.numPages;
-    pageCounter.classList.remove('hide');
-  }else if(pageWrapEl){
-    pageCounter.textContent = 'Página '+(colPage+1)+' de '+colTotal();
-    pageCounter.classList.remove('hide');
-  }else{
-    pageCounter.classList.add('hide');
-  }
+  if(!currentItem){ readerFoot.classList.add('hide'); return; }
+  let cur = 0, total = 0;
+  if(currentItem.section==='pdf' && pdfDoc){ cur = pdfPageNum; total = pdfDoc.numPages; }
+  else if(pageWrapEl && pageStep){ cur = colPage+1; total = colTotal(); }
+  if(!total){ pageCounter.textContent = 'Cargando…'; return; }
+  pageCounter.textContent = 'Página '+cur+' de '+total;
+  const p = total>1 ? (cur-1)/(total-1) : 1;
+  footFill.style.width = (p*100)+'%';
+  footDot.style.left = (p*100)+'%';
 }
 async function nextPage(){
-  if(currentItem && currentItem.section==='pdf'){ if(pdfDoc && pdfPageNum<pdfDoc.numPages){ pdfPageNum++; await renderPdfPage(); saveProgressNow(); } }
-  else { colGoTo(colPage+1); saveProgressNow(); }
+  if(currentItem && currentItem.section==='pdf'){
+    if(pdfDoc && pdfPageNum<pdfDoc.numPages){ pdfPageNum++; await renderPdfPage(); saveProgressLight(); }
+  }else{ colGoTo(colPage+1); saveProgressLight(); }
 }
 async function prevPage(){
-  if(currentItem && currentItem.section==='pdf'){ if(pdfDoc && pdfPageNum>1){ pdfPageNum--; await renderPdfPage(); saveProgressNow(); } }
-  else { colGoTo(colPage-1); saveProgressNow(); }
+  if(currentItem && currentItem.section==='pdf'){
+    if(pdfDoc && pdfPageNum>1){ pdfPageNum--; await renderPdfPage(); saveProgressLight(); }
+  }else{ colGoTo(colPage-1); saveProgressLight(); }
 }
-window.addEventListener('resize', ()=>{ if(pageWrapEl) colGoTo(colPage); });
 document.getElementById('zoneNext').addEventListener('click', nextPage);
 document.getElementById('zonePrev').addEventListener('click', prevPage);
 arrowNext.addEventListener('click', nextPage);
 arrowPrev.addEventListener('click', prevPage);
-
-function saveProgressNow(){
+// Deslizar con el dedo a los lados para pasar de hoja
+let touchX=0, touchY=0, touchT=0;
+readerMain.addEventListener('touchstart', e=>{ const t=e.changedTouches[0]; touchX=t.clientX; touchY=t.clientY; touchT=Date.now(); }, {passive:true});
+readerMain.addEventListener('touchend', e=>{
+  const t=e.changedTouches[0], dx=t.clientX-touchX, dy=t.clientY-touchY;
+  const sel = window.getSelection();
+  if(sel && !sel.isCollapsed) return;
+  if(Math.abs(dx)>55 && Math.abs(dx)>Math.abs(dy)*1.6 && Date.now()-touchT<800){ if(dx<0) nextPage(); else prevPage(); }
+}, {passive:true});
+document.addEventListener('keydown', e=>{
   if(!currentItem) return;
-  let frac = 0;
-  if(currentItem.section==='pdf' && pdfDoc){
-    frac = pdfDoc.numPages>1 ? (pdfPageNum-1)/(pdfDoc.numPages-1) : 0;
-  }else if(pageWrapEl){
-    const total = colTotal();
-    frac = total>1 ? colPage/(total-1) : 0;
-  }
-  currentItem.progress = frac;
-  dbAdd(currentItem).catch(()=>{});
-}
-// Respaldo: guardar también si el celular cambia de app, apaga pantalla o se cierra la pestaña,
-// por si el lector se cierra sin pasar por el botón "Cerrar".
-document.addEventListener('visibilitychange', ()=>{ if(document.hidden) saveProgressNow(); });
-window.addEventListener('pagehide', saveProgressNow);
+  if(e.key==='ArrowRight' || e.key==='PageDown') nextPage();
+  else if(e.key==='ArrowLeft' || e.key==='PageUp') prevPage();
+  else if(e.key==='Escape') closeReader();
+});
 
 function closeReader(){
-  saveProgressNow();
+  const item = currentItem;
+  const section = item && item.section;
+  const saving = saveProgressNow();
   readerEl.classList.add('hidden');
-  readerBody.className='';
-  readerBody.innerHTML='';
+  readerBody.className=''; readerBody.removeAttribute('style'); readerBody.innerHTML='';
   readerUrls.forEach(u=>URL.revokeObjectURL(u));
   readerUrls = [];
   bmPanel.classList.add('hidden');
-  pageNav.classList.add('hide'); arrowPrev.classList.add('hide'); arrowNext.classList.add('hide'); pageCounter.classList.add('hide');
+  pageNav.classList.add('hide'); arrowPrev.classList.add('hide'); arrowNext.classList.add('hide'); readerFoot.classList.add('hide');
   if(pdfDoc){ try{ pdfDoc.destroy(); }catch(e){} }
   pdfDoc = null; pdfPageNum = 1;
-  pageWrapEl = null; colPage = 0;
+  pageWrapEl = null; colPage = 0; pageStep = 0;
+  progressReady = false;
   currentItem = null;
+  if(section) saving.then(()=>renderShelf(section));
 }
 
 async function openReader(item, target){
   currentItem = item;
+  progressReady = false;
+  const savedFrac = readProgress(item);
   readerTitle.textContent = item.title || item.name;
-  readerBody.className='';
+  readerBody.className=''; readerBody.removeAttribute('style');
   readerBody.innerHTML = '<div class="status">Abriendo…</div>';
   readerEl.classList.remove('hidden');
   highlightBtn.classList.add('hidden-inline');
   pageNav.classList.remove('hide'); arrowPrev.classList.remove('hide'); arrowNext.classList.remove('hide');
+  readerFoot.classList.remove('hide'); pageCounter.textContent = 'Cargando…';
+  footFill.style.width='0%'; footDot.style.left='0%';
 
   try{
     if(item.section==='pdf'){
-      await renderPDF(item.blob, target);
-    } else if(item.section==='word'){
-      await renderDocx(item.blob);
-    } else if(item.section==='epub'){
-      await renderEpub(item.blob, target);
-    }
-    if(item.section!=='pdf' && !target && pageWrapEl){
-      const info = buildInfo(item);
-      if(info) pageWrapEl.insertBefore(info, pageWrapEl.firstChild);
-    }
-    applyHighlights(item);
-    if(item.section!=='pdf') setupHighlightSelection();
-    if(item.section!=='pdf' && pageWrapEl){
-      requestAnimationFrame(()=>{
-        requestAnimationFrame(()=>{
-          let el = null;
-          if(target){
-            if(target.fragment) el = pageWrapEl.querySelector('#'+CSS.escape(target.fragment));
-            if(!el && target.spineId) el = document.getElementById('spine-'+target.spineId);
-          }
-          if(el){
-            const h = readerBody.clientHeight || 1;
-            colGoTo(Math.round(el.offsetTop / h));
-          }else if(!target && item.progress){
-            colGoTo(Math.round(item.progress*(colTotal()-1)));
-          }else{
-            colGoTo(0);
-          }
-          updatePageCounter();
-          // Reajuste por si alguna imagen tardó en cargar y cambió el alto total
-          setTimeout(()=>{ if(pageWrapEl) colGoTo(colPage); }, 350);
-        });
-      });
+      await renderPDF(item.blob, target, savedFrac);
+    }else{
+      if(item.section==='word') await renderDocx(item.blob);
+      else await renderEpub(item.blob);
+      if(pageWrapEl){
+        const info = buildInfo(item);
+        if(info) pageWrapEl.insertBefore(info, pageWrapEl.firstChild);
+        applyHighlights(item);
+        setupHighlightSelection();
+        await settleMedia();
+        if(currentItem !== item) return; // lo cerraron mientras cargaba
+        layoutPages();
+        let el = null;
+        if(target){
+          if(target.fragment) el = pageWrapEl.querySelector('#'+CSS.escape(target.fragment));
+          if(!el && target.spineId) el = document.getElementById('spine-'+target.spineId);
+        }
+        if(el){
+          const delta = el.getBoundingClientRect().top - pageWrapEl.getBoundingClientRect().top;
+          colGoTo(Math.floor(delta / pageStep));
+        }else{
+          colGoTo(Math.round(savedFrac * (colTotal()-1)));
+        }
+        progressReady = true;
+        setTimeout(()=>{ if(pageWrapEl && currentItem===item) relayout(); }, 500);
+      }
     }
   }catch(err){
     console.error(err);
-    readerBody.className='';
+    readerBody.className=''; readerBody.removeAttribute('style');
     readerBody.innerHTML = '<div class="status">No se pudo abrir este archivo.</div>';
   }
 }
@@ -1258,24 +1394,25 @@ async function renderDocx(blob){
 async function renderPdfPage(){
   const page = await pdfDoc.getPage(pdfPageNum);
   const unscaled = page.getViewport({scale:1});
-  const scale = Math.min((readerBody.clientWidth-20)/unscaled.width, (readerBody.clientHeight-20)/unscaled.height);
+  const scale = Math.min((readerBody.clientWidth-28)/unscaled.width, (readerBody.clientHeight-28)/unscaled.height);
   const viewport = page.getViewport({scale});
   readerBody.innerHTML='';
   const canvas = document.createElement('canvas');
   canvas.width = viewport.width; canvas.height = viewport.height;
-  canvas.style.cssText = 'display:block; margin:0 auto; border-radius:4px; box-shadow:0 4px 18px rgba(0,0,0,.18)';
+  canvas.style.cssText = 'display:block; margin:0 auto; box-shadow:0 4px 18px rgba(0,0,0,.18)';
   readerBody.appendChild(canvas);
   await page.render({canvasContext:canvas.getContext('2d'), viewport}).promise;
   updatePageCounter();
 }
-async function renderPDF(blob, target){
+async function renderPDF(blob, target, savedFrac){
   if(!window.pdfjsLib){ throw new Error('pdf.js no disponible'); }
   const buf = await blob.arrayBuffer();
   pdfDoc = await pdfjsLib.getDocument({data:buf}).promise;
   readerBody.className='pdf-page';
-  pdfPageNum = target && target.pageNum ? target.pageNum : (currentItem.progress ? Math.max(1, Math.round(currentItem.progress*(pdfDoc.numPages-1))+1) : 1);
+  pdfPageNum = target && target.pageNum ? target.pageNum : Math.round((savedFrac||0)*(pdfDoc.numPages-1))+1;
   pdfPageNum = Math.max(1, Math.min(pdfDoc.numPages, pdfPageNum));
   await renderPdfPage();
+  progressReady = true;
 }
 
 // Lector de EPUB: lee el orden de capítulos y carga también las imágenes internas
@@ -1309,7 +1446,6 @@ async function renderEpub(blob, target){
     const section = document.createElement('div');
     section.id = 'spine-'+id;
     section.innerHTML = doc.body ? doc.body.innerHTML : html;
-    section.style.marginBottom='2.2em';
     pageWrapEl.appendChild(section);
   }
   if(!pageWrapEl.children.length){
@@ -1429,11 +1565,14 @@ function applyHighlights(item){
   });
 }
 function setupHighlightSelection(){
+  if(hlReady) return;
+  hlReady = true;
   let pendingRange = null;
   readerBody.addEventListener('mouseup', onSel);
   readerBody.addEventListener('touchend', onSel);
   function onSel(){
     setTimeout(()=>{
+      if(!currentItem || currentItem.section==='pdf') return;
       const sel = window.getSelection();
       if(!sel || sel.isCollapsed || sel.rangeCount===0){ highlightBtn.classList.add('hidden-inline'); pendingRange=null; return; }
       const range = sel.getRangeAt(0);

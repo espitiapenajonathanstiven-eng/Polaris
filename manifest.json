@@ -1,0 +1,14 @@
+{
+  "name": "Polaris",
+  "short_name": "Polaris",
+  "description": "Lector de libros EPUB, PDF y Word, organizado por formato",
+  "lang": "es",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#EFE9DD",
+  "theme_color": "#EFE9DD",
+  "icons": [
+    { "src": "icono.png", "sizes": "192x192 512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
