@@ -1859,6 +1859,27 @@ document.getElementById('restoreInput').addEventListener('change', async (e)=>{
 applySettings();
 ['epub','pdf','word'].forEach(renderShelf);
 enrichPending();
+  // Animación de paso de página
+document.addEventListener('DOMContentLoaded', () => {
+  const btnNext = document.querySelector('#nextPage, .btn-next, [data-action="next"]');
+  const btnPrev = document.querySelector('#prevPage, .btn-prev, [data-action="prev"]');
+  const readerArea = document.querySelector('.reader-page, #readerContent, .book-container');
+
+  if (btnNext && readerArea) {
+    btnNext.addEventListener('click', () => {
+      readerArea.classList.add('page-flip-next');
+      setTimeout(() => readerArea.classList.remove('page-flip-next'), 400);
+    });
+  }
+
+  if (btnPrev && readerArea) {
+    btnPrev.addEventListener('click', () => {
+      readerArea.classList.add('page-flip-prev');
+      setTimeout(() => readerArea.classList.remove('page-flip-prev'), 400);
+    });
+  }
+});
+  
 // Registro del Service Worker para PWA
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
