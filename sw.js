@@ -1,45 +1,36 @@
-// Nombre del caché de Polaris
-const CACHE_NAME = 'polaris-cache-v2';
+// Polaris - service worker
+// Para forzar una actualización en los celulares, sube el número (v3, v4...)
+const CACHE = 'polaris-cache-v2';
+const ARCHIVOS = ['./', './index.html', './manifest.json', './icono.png'];
 
-// Archivos básicos a guardar en caché
-const ASSETS_TO_CACHE = [
-  './',
-  './index.html',
-  './manifest.json',
-  './icono.png'
-];
-
-// Instalación del Service Worker
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(ASSETS_TO_CACHE);
-    })
+self.addEventListener('install', e => {
+  e.waitUntil(
+    caches.open(CACHE).then(c => c.addAll(ARCHIVOS)).then(() => self.skipWaiting())
   );
-  self.skipWaiting();
 });
 
-// Activación del Service Worker
-self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cache) => {
-          if (cache !== CACHE_NAME) {
-            return caches.delete(cache);
-          }
-        })
-      );
-    })
+self.addEventListener('activate', e => {
+  e.waitUntil(
+    caches.keys()
+      .then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k))))
+      .then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
-// Intercepción de peticiones
-self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request).then((response) => {
-      return response || fetch(event.request);
-    })
+// Primero internet (así siempre llega la versión nueva); sin internet, usa la copia guardada
+self.addEventListener('fetch', e => {
+  const req = e.request;
+  if (req.method !== 'GET') return;
+  const mismoOrigen = new URL(req.url).origin === self.location.origin;
+  e.respondWith(
+    fetch(req, mismoOrigen ? { cache: 'no-cache' } : undefined)
+      .then(res => {
+        if (res && (res.ok || res.type === 'opaque')) {
+          const copia = res.clone();
+          caches.open(CACHE).then(c => c.put(req, copia));
+        }
+        return res;
+      })
+      .catch(() => caches.match(req).then(r => r || caches.match('./index.html')))
   );
 });
