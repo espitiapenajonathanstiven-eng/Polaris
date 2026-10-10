@@ -1859,8 +1859,8 @@ document.getElementById('restoreInput').addEventListener('change', async (e)=>{
 applySettings();
 ['epub','pdf','word'].forEach(renderShelf);
 enrichPending();
- 
-  // Animación de paso de página (EPUB, PDF y Word)
+
+// Animación de paso de página (EPUB, PDF y Word)
 function turnAnim(dir){
   readerBody.classList.remove('turn-next','turn-prev');
   void readerBody.offsetWidth;
@@ -1868,15 +1868,7 @@ function turnAnim(dir){
 }
 readerBody.addEventListener('animationend', ()=>readerBody.classList.remove('turn-next','turn-prev'));
 
-  if (btnPrev && readerArea) {
-    btnPrev.addEventListener('click', () => {
-      readerArea.classList.add('page-flip-prev');
-      setTimeout(() => readerArea.classList.remove('page-flip-prev'), 400);
-    });
-  }
-});
-  
-// Animación de paso de página (EPUB, PDF y Word) function turnAnim(dir){   readerBody.classList.remove('turn-next','turn-prev');   void readerBody.offsetWidth;   readerBody.classList.add('turn-'+dir); } readerBody.addEventListener('animationend', ()=>readerBody.classList.remove('turn-next','turn-prev'));  // Registro del Service Worker para PWA
+// Registro del Service Worker para PWA
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js')
