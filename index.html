@@ -359,7 +359,7 @@
   .reader{
     position:fixed; inset:0; background:var(--paper); z-index:10;
     display:flex; flex-direction:column; overflow:hidden;
-    --paper:#F0DEC6; --ink:#4E3C2A; --ink-soft:#8A7558; --line:#D8C2A0; --card:#E8D4B4;
+    --paper:#F8F0DC; --ink:#3A3024; --ink-soft:#7D6E58; --line:#E2D5B8; --card:#EFE4C8;
     color:var(--ink);
   }
   .reader-main{position:relative; flex:1; min-height:0; display:flex; flex-direction:column; justify-content:center}
@@ -389,7 +389,7 @@
   #readerBody.paged{position:relative; min-height:0; overflow:hidden; padding:0}
   #readerBody.paged .pagewrap{
     position:absolute; left:0; right:0; top:0; padding:0 26px; box-sizing:border-box;
-    transition:transform .3s ease; text-align:justify; -webkit-hyphens:auto; hyphens:auto; color:var(--ink);
+    transition:none; text-align:justify; -webkit-hyphens:auto; hyphens:auto; color:var(--ink);
   }
   #readerBody.paged.doc-view{font-size:1.02rem}
   #readerBody.paged .pagewrap > div:not(.book-info){display:flow-root}
@@ -407,7 +407,7 @@
   #readerBody.paged .pagewrap .book-info p{text-indent:0; text-align:left}
   #readerBody.pdf-page{display:flex; align-items:center; justify-content:center; overflow:hidden; padding:14px; box-sizing:border-box}
   #readerBody.pdf-page canvas{max-width:100%; max-height:100%}
-  .page-nav{position:absolute; inset:0; display:flex; justify-content:space-between; z-index:3; pointer-events:none}
+  #readerBody.turn-next{animation:turnNext .38s ease}   #readerBody.turn-prev{animation:turnPrev .38s ease}   @keyframes turnNext{0%{opacity:.2; transform:translateX(28px)} 100%{opacity:1; transform:none}}   @keyframes turnPrev{0%{opacity:.2; transform:translateX(-28px)} 100%{opacity:1; transform:none}}   @media (prefers-reduced-motion:reduce){#readerBody.turn-next,#readerBody.turn-prev{animation:none}}   .page-nav{position:absolute; inset:0; display:flex; justify-content:space-between; z-index:3; pointer-events:none}
   .page-nav .zone{width:16%; pointer-events:auto}
   .page-arrow{
     position:absolute; top:50%; transform:translateY(-50%); z-index:4;
@@ -1859,18 +1859,14 @@ document.getElementById('restoreInput').addEventListener('change', async (e)=>{
 applySettings();
 ['epub','pdf','word'].forEach(renderShelf);
 enrichPending();
-  // Animación de paso de página
-document.addEventListener('DOMContentLoaded', () => {
-  const btnNext = document.querySelector('#nextPage, .btn-next, [data-action="next"]');
-  const btnPrev = document.querySelector('#prevPage, .btn-prev, [data-action="prev"]');
-  const readerArea = document.querySelector('.reader-page, #readerContent, .book-container');
-
-  if (btnNext && readerArea) {
-    btnNext.addEventListener('click', () => {
-      readerArea.classList.add('page-flip-next');
-      setTimeout(() => readerArea.classList.remove('page-flip-next'), 400);
-    });
-  }
+ 
+  // Animación de paso de página (EPUB, PDF y Word)
+function turnAnim(dir){
+  readerBody.classList.remove('turn-next','turn-prev');
+  void readerBody.offsetWidth;
+  readerBody.classList.add('turn-'+dir);
+}
+readerBody.addEventListener('animationend', ()=>readerBody.classList.remove('turn-next','turn-prev'));
 
   if (btnPrev && readerArea) {
     btnPrev.addEventListener('click', () => {
