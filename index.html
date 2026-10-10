@@ -1288,13 +1288,13 @@ function updatePageCounter(){
 }
 async function nextPage(){
   if(currentItem && currentItem.section==='pdf'){
-    if(pdfDoc && pdfPageNum<pdfDoc.numPages){ pdfPageNum++; await renderPdfPage(); saveProgressLight(); }
-  }else{ colGoTo(colPage+1); saveProgressLight(); }
+    if(pdfDoc && pdfPageNum<pdfDoc.numPages){ turnAnim('next'); pdfPageNum++; await renderPdfPage(); saveProgressLight(); }
+  }else if(colPage < colTotal()-1){ turnAnim('next'); colGoTo(colPage+1); saveProgressLight(); }
 }
 async function prevPage(){
   if(currentItem && currentItem.section==='pdf'){
-    if(pdfDoc && pdfPageNum>1){ pdfPageNum--; await renderPdfPage(); saveProgressLight(); }
-  }else{ colGoTo(colPage-1); saveProgressLight(); }
+    if(pdfDoc && pdfPageNum>1){ turnAnim('prev'); pdfPageNum--; await renderPdfPage(); saveProgressLight(); }
+  }else if(colPage > 0){ turnAnim('prev'); colGoTo(colPage-1); saveProgressLight(); }
 }
 document.getElementById('zoneNext').addEventListener('click', nextPage);
 document.getElementById('zonePrev').addEventListener('click', prevPage);
@@ -1876,7 +1876,7 @@ readerBody.addEventListener('animationend', ()=>readerBody.classList.remove('tur
   }
 });
   
-// Registro del Service Worker para PWA
+// Animación de paso de página (EPUB, PDF y Word) function turnAnim(dir){   readerBody.classList.remove('turn-next','turn-prev');   void readerBody.offsetWidth;   readerBody.classList.add('turn-'+dir); } readerBody.addEventListener('animationend', ()=>readerBody.classList.remove('turn-next','turn-prev'));  // Registro del Service Worker para PWA
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js')
