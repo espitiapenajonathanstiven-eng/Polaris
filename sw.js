@@ -1,5 +1,5 @@
 // Nombre del caché de Polaris
-const CACHE_NAME = 'polaris-cache-v1';
+const CACHE_NAME = 'polaris-cache-v2';
 
 // Archivos básicos a guardar en caché
 const ASSETS_TO_CACHE = [
