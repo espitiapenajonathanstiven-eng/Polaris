@@ -158,7 +158,6 @@
   .book .actions .readmark.on{color:var(--epub)}
   .book .del{right:auto; left:8px}
   .grid.list .book .actions{position:static; margin-left:4px}
-  .grid.shelf .book .actions, .grid.editorial .book .actions{display:none}
   .book.trashed-card .restore, .book.trashed-card .forget{
     margin-top:8px; width:100%; padding:7px; border-radius:6px; border:1px solid var(--line);
     background:var(--card); color:var(--ink); font-size:.78rem; cursor:pointer;
@@ -294,7 +293,7 @@
     -webkit-overflow-scrolling:touch;
   }
   .grid.shelf .book{
-    flex:0 0 auto; width:42px; height:150px; min-height:0; border-radius:3px 3px 0 0;
+    flex:0 0 auto; width:42px; height:200px; min-height:0; border-radius:3px 3px 0 0;
     padding:8px 4px; justify-content:flex-start; background:var(--spine,var(--epub));
     border:none; box-shadow:inset -3px 0 0 rgba(0,0,0,.15);
   }
@@ -306,6 +305,14 @@
   }
   .grid.shelf .book .meta{display:none}
   .grid.shelf .book .del{color:rgba(255,255,255,.75); top:2px; right:2px}
+  .grid.shelf .book .name{margin-bottom:60px}
+  .grid.shelf .book .actions{
+    position:absolute; top:auto; right:auto; bottom:6px; left:50%; transform:translateX(-50%);
+    flex-direction:column; gap:5px; z-index:3;
+  }
+  .grid.shelf .book .actions button{background:rgba(0,0,0,.3); color:#fff}
+  .grid.shelf .book .actions .fav.on{color:#ff6b86}
+  .grid.shelf .book .actions .readmark.on{color:#7fe0a0}
   #view-epub .grid.shelf .book{--spine:var(--epub)}
   #view-pdf .grid.shelf .book{--spine:var(--pdf)}
   #view-word .grid.shelf .book{--spine:var(--word)}
@@ -367,6 +374,12 @@
     position:absolute; z-index:3; top:14px; left:14px; background:rgba(0,0,0,.4); color:#fff;
     border-radius:50%; width:28px; height:28px; display:flex; align-items:center; justify-content:center; font-size:.8rem;
   }
+  .grid.editorial .book .actions{
+    position:absolute; z-index:3; top:14px; left:50px; right:auto; gap:6px;
+  }
+  .grid.editorial .book .actions button{width:28px; height:28px; background:rgba(0,0,0,.4); color:#fff}
+  .grid.editorial .book .actions .fav.on{color:#ff6b86}
+  .grid.editorial .book .actions .readmark.on{color:#7fe0a0}
   .grid.editorial .book .eyoutube{
     display:flex; position:absolute; z-index:3; top:14px; right:14px; align-items:center; gap:5px;
     background:rgba(0,0,0,.4); border:1px solid rgba(255,255,255,.3); border-radius:20px;
