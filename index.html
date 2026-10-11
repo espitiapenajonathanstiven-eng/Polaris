@@ -418,11 +418,39 @@
   }
   .grid.editorial .book .ecover-btn.swatch{background:var(--spine, var(--epub))}
   .grid.editorial .book .meta{display:none}
-  /* ===== Cuadrícula estilo portada con carrusel ===== */ .ghero{display:none} .ghero:has(+ .grid.gcards:not(.list):not(.shelf):not(.editorial)){display:block; position:relative; height:440px; border-radius:26px; overflow:hidden; color:#fff; isolation:isolate; box-shadow:0 14px 34px rgba(0,0,0,.25)} .ghero .gbg{position:absolute; inset:0; z-index:-2; background:var(--spine,var(--epub)) center/cover} .ghero .gscrim{position:absolute; inset:0; z-index:-1; background:linear-gradient(90deg,rgba(0,0,0,.65),rgba(0,0,0,.1) 75%),linear-gradient(0deg,rgba(0,0,0,.55),transparent 45%)} .ghero .gtext{position:absolute; left:20px; right:20px; top:26px} .ghero .glabel{display:inline-block; font-size:.75rem; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.88); padding-top:8px; border-top:2px solid #fff; margin-bottom:10px} .ghero .gtitle{font-family:'Source Serif 4',serif; font-weight:700; font-size:2.1rem; line-height:1.05; text-transform:uppercase; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; max-width:85%} .ghero .gauthor{font-size:.85rem; color:rgba(255,255,255,.8); margin:8px 0 12px} .ghero .ggo{background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.7); color:#fff; padding:9px 18px; border-radius:999px; font-size:.72rem; letter-spacing:.06em; text-transform:uppercase; cursor:pointer} .ghero .gctrl{position:absolute; left:20px; right:20px; bottom:12px; height:34px; display:flex; align-items:center; gap:10px} .ghero .gctrl button{width:34px; height:34px; border-radius:50%; border:1px solid rgba(255,255,255,.7); background:rgba(255,255,255,.08); color:#fff; font-size:1.2rem; line-height:1; cursor:pointer} .ghero .gline{flex:1; height:1px; background:rgba(255,255,255,.5)} .ghero .gnum{font-family:'Source Serif 4',serif; font-size:1.7rem; font-weight:600} .grid.gcards:not(.list):not(.shelf):not(.editorial){display:flex; flex-direction:row; gap:12px; overflow-x:auto; position:relative; z-index:2; margin:-200px 0 0; padding:0 16px 12px; -webkit-overflow-scrolling:touch; scroll-snap-type:x proximity; scrollbar-width:none} .grid.gcards:not(.list):not(.shelf):not(.editorial)::-webkit-scrollbar{display:none} .grid.gcards:not(.list):not(.shelf):not(.editorial) .book{flex:0 0 112px; width:112px; height:150px; min-height:0; padding:10px; border:1px solid rgba(255,255,255,.35); border-radius:18px; overflow:hidden; position:relative; isolation:isolate; display:flex; flex-direction:column; justify-content:flex-end; gap:2px; color:#fff; scroll-snap-align:center; background:var(--spine,var(--epub)); box-shadow:0 8px 20px rgba(0,0,0,.35); transition:transform .25s, border-color .25s} .grid.gcards:not(.list):not(.shelf):not(.editorial) .book.sel{border-color:#fff; transform:translateY(-8px)} .grid.gcards:not(.list):not(.shelf):not(.editorial) .book::after{content:""; position:absolute; inset:0; z-index:-1; background:linear-gradient(180deg,transparent 35%,rgba(0,0,0,.8))} .grid.gcards:not(.list):not(.shelf):not(.editorial) .book .bg, .grid.gcards:not(.list):not(.shelf):not(.editorial) .book .scrim, .grid.gcards:not(.list):not(.shelf):not(.editorial) .book .eherowrap, .grid.gcards:not(.list):not(.shelf):not(.editorial) .book .meta{display:none} .grid.gcards:not(.list):not(.shelf):not(.editorial) .book .cover{display:block; position:absolute; inset:0; z-index:-2; width:100%; height:100%; max-height:none; aspect-ratio:auto; border-radius:0} .grid.gcards:not(.list):not(.shelf):not(.editorial) .book .author{order:1; display:block; font-size:.58rem; text-transform:uppercase; letter-spacing:.04em; color:rgba(255,255,255,.75)} .grid.gcards:not(.list):not(.shelf):not(.editorial) .book .name{order:2; flex:0 0 auto; font-size:.8rem; font-weight:700; line-height:1.15; color:#fff; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden} .grid.gcards:not(.list):not(.shelf):not(.editorial) .book .del{z-index:3; width:24px; height:24px; padding:0; border-radius:50%; background:rgba(0,0,0,.4); color:#fff; font-size:.7rem; display:flex; align-items:center; justify-content:center} .grid.gcards:not(.list):not(.shelf):not(.editorial) .book .actions{z-index:3} .grid.gcards:not(.list):not(.shelf):not(.editorial) .book .actions button{width:24px; height:24px; background:rgba(0,0,0,.4); color:#fff; font-size:.7rem} .grid.gcards:not(.list):not(.shelf):not(.editorial) .book .actions .fav.on{color:#ff6b86} .grid.gcards:not(.list):not(.shelf):not(.editorial) .book .actions .readmark.on{color:#7fe0a0}  portada con carrusel ===== */ .ghero{display:none} .ghero:has(+ .grid.gcards:not(.list):not(.shelf):not(.editorial)){display:block; position:relative; height:440px; border-radius:26px; overflow:hidden; color:#fff; isolation:isolate; box-sground:linear-gradient(90deg,rgba(0,0,0,.65),rgba(0,0,0,.1) 75%),linear-gradient(0deg,rgba(0,0,0,.55),transparenpx} .ghero .glabel{display:inline-block; font-size:.75rem; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.88); padding-top:8px; border-top:2px solid #fff; margin-bottom:10px} .ghero .gtitle{font-family:'Source Serif 4',serif; font-weight:700; font-size:2.1rem; line-height:1.05; texcase; cursor:pointer} .ghero .gctrl{position:absolute; left:20px; right:20px; bottom:12px; height:34px; display:flex; align-items:center; gap:10px} .gight:34px; border-radius:50%; border:1px solid rgba(255,255,255,.7); background:rgba(255,255,255,.08); color:#fff; font-size:1.2rem; line-height:1; cursor:pointer} .ghero .gline{flex:1; height:1px; background:rgba(255,255,255,.5)} .ghero .gnum{font-family:'Source Serif 4',serif; font-size:1.7rem; font-weight:600} .grid.gcards:not(.list):not(.shelf):not(.editorial){display:flex; flex-direction:row; gap:12px; overflow-x:auto; position:relative; z-index:2; margin:-200px 0 0; padding:0 16px rollbar-width:none} .grid.gcards:not(.list):not(.shelf):not(.editorial)::-webkit-scrollbar{display:none} .grid.gcards:not(.list):not(.shelf):not(.editorial) .book{flex:0 0 112px; width:112px; height:150px; min-height:0; padding:10px; border:1px solid rgba(255,255,255,.35); border-radius:18px; overflow:hidden; position:relative; isolation:isolate; display:flex; flex-direction:column; justify-content:flex-end; gap:2px; color:#fff; scroll-snap-align:center; background:var(--spine,var(--epub)); box-shadow:0 8px 20px rgba(0,0,0,.35); transition:transform .25s, border-color .25s} .grid.gcards:not(.list):not(.shelf):not(.editorial) .book.sel{border-color:#fff; transform:translateY(-8px)} .grid.gcards:not(.list):not(.shelf):not(.editorial) .book::after{content:""; position:absolute; inset:0; z-index:-1; background:linear-gradient(180deg,transparent 35%,rgba(0,0,0,.8))} .grid.gcards:not(.list):not(.shelf):not(.editorial) .book .bg, .grid.gcards:not(.list):not(.shelf):not(.editorial) .book .scrim, .grid.gcards:not(.list):not(.shelf):not(.editorial) .book .eherowrap, .grid.gcards:not(.list):not(.shelf):not(.editorial) .book .meta{display:none} .grid.gcards:not(.list):not(.shelf):not(.editorial) .book .cover{display:block; position:absolute; inset:0; z-index:-2; width:100%; height:100%; max-height:none; aspect-ratio:auto; border-radius:0} .grid.gcards:not(.list):not(.shelf):not(.editorial) .book .author{order:1; display:block; font-size:.58rem; 
-  .detail{position:fixed; inset:0; z-index:9; overflow-y:auto; -webkit-overflow-scrolling:touch; background:rgba(10,12,18,.55); -webkit-backdrop-filter:blur(26px); backdrop-filter:blur(26px); color:#fff; isolation:isolate}
+  /* ===== Cuadrícula estilo portada con carrusel ===== */
+  .ghero{display:none}
+  .ghero:has(+ .grid.gcards:not(.list):not(.shelf):not(.editorial)){display:block; position:relative; height:440px; border-radius:26px; overflow:hidden; color:#fff; isolation:isolate; box-shadow:0 14px 34px rgba(0,0,0,.25)}
+  .ghero .gbg{position:absolute; inset:0; z-index:-2; background:var(--spine,var(--epub)) center/cover}
+  .ghero .gscrim{position:absolute; inset:0; z-index:-1; background:linear-gradient(90deg,rgba(0,0,0,.65),rgba(0,0,0,.1) 75%),linear-gradient(0deg,rgba(0,0,0,.55),transparent 45%)}
+  .ghero .gtext{position:absolute; left:20px; right:20px; top:26px}
+  .ghero .glabel{display:inline-block; font-size:.75rem; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.88); padding-top:8px; border-top:2px solid #fff; margin-bottom:10px}
+  .ghero .gtitle{font-family:'Source Serif 4',serif; font-weight:700; font-size:2.1rem; line-height:1.05; text-transform:uppercase; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; max-width:85%}
+  .ghero .gauthor{font-size:.85rem; color:rgba(255,255,255,.8); margin:8px 0 12px}
+  .ghero .ggo{background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.7); color:#fff; padding:9px 18px; border-radius:999px; font-size:.72rem; letter-spacing:.06em; text-transform:uppercase; cursor:pointer}
+  .ghero .gctrl{position:absolute; left:20px; right:20px; bottom:12px; height:34px; display:flex; align-items:center; gap:10px}
+  .ghero .gctrl button{width:34px; height:34px; border-radius:50%; border:1px solid rgba(255,255,255,.7); background:rgba(255,255,255,.08); color:#fff; font-size:1.2rem; line-height:1; cursor:pointer}
+  .ghero .gline{flex:1; height:1px; background:rgba(255,255,255,.5)}
+  .ghero .gnum{font-family:'Source Serif 4',serif; font-size:1.7rem; font-weight:600}
+  .grid.gcards:not(.list):not(.shelf):not(.editorial){display:flex; flex-direction:row; gap:12px; overflow-x:auto; position:relative; z-index:2; margin:-200px 0 0; padding:0 16px 12px; -webkit-overflow-scrolling:touch; scroll-snap-type:x proximity; scrollbar-width:none}
+  .grid.gcards:not(.list):not(.shelf):not(.editorial)::-webkit-scrollbar{display:none}
+  .grid.gcards:not(.list):not(.shelf):not(.editorial) .book{flex:0 0 112px; width:112px; height:150px; min-height:0; padding:10px; border:1px solid rgba(255,255,255,.35); border-radius:18px; overflow:hidden; position:relative; isolation:isolate; display:flex; flex-direction:column; justify-content:flex-end; gap:2px; color:#fff; scroll-snap-align:center; background:var(--spine,var(--epub)); box-shadow:0 8px 20px rgba(0,0,0,.35); transition:transform .25s, border-color .25s}
+  .grid.gcards:not(.list):not(.shelf):not(.editorial) .book.sel{border-color:#fff; transform:translateY(-8px)}
+  .grid.gcards:not(.list):not(.shelf):not(.editorial) .book::after{content:""; position:absolute; inset:0; z-index:-1; background:linear-gradient(180deg,transparent 35%,rgba(0,0,0,.8))}
+  .grid.gcards:not(.list):not(.shelf):not(.editorial) .book .bg, .grid.gcards:not(.list):not(.shelf):not(.editorial) .book .scrim, .grid.gcards:not(.list):not(.shelf):not(.editorial) .book .eherowrap, .grid.gcards:not(.list):not(.shelf):not(.editorial) .book .meta{display:none}
+  .grid.gcards:not(.list):not(.shelf):not(.editorial) .book .cover{display:block; position:absolute; inset:0; z-index:-2; width:100%; height:100%; max-height:none; aspect-ratio:auto; border-radius:0}
+  .grid.gcards:not(.list):not(.shelf):not(.editorial) .book .author{order:1; display:block; font-size:.58rem; text-transform:uppercase; letter-spacing:.04em; color:rgba(255,255,255,.75)}
+  .grid.gcards:not(.list):not(.shelf):not(.editorial) .book .name{order:2; flex:0 0 auto; font-size:.8rem; font-weight:700; line-height:1.15; color:#fff; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden}
+  .grid.gcards:not(.list):not(.shelf):not(.editorial) .book .del{z-index:3; width:24px; height:24px; padding:0; border-radius:50%; background:rgba(0,0,0,.4); color:#fff; font-size:.7rem; display:flex; align-items:center; justify-content:center}
+  .grid.gcards:not(.list):not(.shelf):not(.editorial) .book .actions{z-index:3}
+  .grid.gcards:not(.list):not(.shelf):not(.editorial) .book .actions button{width:24px; height:24px; background:rgba(0,0,0,.4); color:#fff; font-size:.7rem}
+  .grid.gcards:not(.list):not(.shelf):not(.editorial) .book .actions .fav.on{color:#ff6b86}
+  .grid.gcards:not(.list):not(.shelf):not(.editorial) .book .actions .readmark.on{color:#7fe0a0}
+  /* ===== Pantalla de detalle del libro ===== */
+  .detail{position:fixed; inset:0; z-index:9; overflow-y:auto; -webkit-overflow-scrolling:touch; background:#1b1916; color:#fff; isolation:isolate}
   .detail.hidden{display:none}
-  .detail .dbg{display:none; position:fixed; inset:0; z-index:-2; background:var(--spine,var(--epub)) center/cover; filter:blur(38px) brightness(.72) saturate(1.6); transform:scale(1.4)}
-  .detail .dfade{position:fixed; left:0; right:0; bottom:0; height:150px; z-index:0; pointer-events:none; background:linear-gradient(180deg,transparent,rgba(8,10,16,.35))}
+  .detail .dbg{position:fixed; inset:0; z-index:-2; background:var(--spine,var(--epub)) center/cover; filter:blur(38px) brightness(.72) saturate(1.6); transform:scale(1.4)}
+  .detail .dfade{position:fixed; left:0; right:0; bottom:0; height:150px; z-index:0; pointer-events:none; background:linear-gradient(180deg,transparent,rgba(8,10,16,.88))}
   .detail .dwrap{max-width:430px; margin:0 auto; padding:calc(env(safe-area-inset-top,0px) + 14px) 18px calc(110px + env(safe-area-inset-bottom,0px))}
   .detail .dback{background:rgba(255,255,255,.14); border:none; color:#fff; width:38px; height:38px; border-radius:50%; font-size:1.2rem; cursor:pointer}
   .detail .dhead{display:flex; gap:16px; margin:16px 0 20px; align-items:flex-end}
@@ -430,7 +458,7 @@
   .detail h2{font-family:'Source Serif 4',serif; font-size:1.45rem; line-height:1.2; margin:0 0 6px}
   .detail .dauth{font-size:.8rem; color:rgba(255,255,255,.7)}
   .detail .dgrid{display:grid; grid-template-columns:1fr 1fr; gap:12px}
-  .detail .tile{border-radius:24px; padding:16px; color:#fff; min-height:118px; display:flex; flex-direction:column; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.22); background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.28); -webkit-backdrop-filter:blur(18px); backdrop-filter:blur(18px); box-shadow:0 8px 24px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.18)}
+  .detail .tile{border-radius:24px; padding:16px; color:#fff; min-height:118px; display:flex; flex-direction:column; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.22); background:linear-gradient(145deg,color-mix(in srgb,var(--ac) 40%,transparent),rgba(255,255,255,.06)); border:1px solid color-mix(in srgb,var(--ac) 50%,transparent); -webkit-backdrop-filter:blur(18px); backdrop-filter:blur(18px); box-shadow:0 8px 24px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.18)}
   .detail .tile.wide{grid-column:1 / -1; min-height:0}
   .detail .tile small{font-size:.68rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--ac)}
   .detail .tile b{font-family:'Source Serif 4',serif; font-size:2rem; line-height:1.1; margin:8px 0 4px}
@@ -438,7 +466,7 @@
   .detail .t-prog{--ac:#F7D96A} .detail .t-time{--ac:#FFA763} .detail .t-sess{--ac:#C3A9FF} .detail .t-streak{--ac:#A6E36B}
   .detail .bar{height:8px; border-radius:8px; background:rgba(255,255,255,.2); margin:10px 0 8px; overflow:hidden}
   .detail .bar i{display:block; height:100%; background:var(--ac); border-radius:8px; box-shadow:0 0 12px var(--ac)}
-  .detail .dlog{margin-top:14px; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.28); -webkit-backdrop-filter:blur(18px); backdrop-filter:blur(18px); border-radius:24px; padding:16px}
+  .detail .dlog{margin-top:14px; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.18); -webkit-backdrop-filter:blur(18px); backdrop-filter:blur(18px); border-radius:24px; padding:16px}
   .detail .dlog h3{margin:0 0 10px; font-size:.78rem; text-transform:uppercase; letter-spacing:.06em; opacity:.8}
   .detail .lrow{display:flex; justify-content:space-between; padding:9px 0; border-top:1px solid rgba(255,255,255,.12); font-size:.85rem}
   .detail .dread{z-index:1; box-shadow:0 10px 28px rgba(0,0,0,.35); position:fixed; left:50%; translate:-50% 0; bottom:calc(18px + env(safe-area-inset-bottom,0px)); width:calc(100% - 36px); max-width:394px; padding:16px; border:none; border-radius:999px; background:#fff; color:#111; font-weight:600; font-size:1rem; cursor:pointer}
@@ -1222,7 +1250,8 @@ async function renderShelf(section){
   grid.innerHTML='';
   empty.style.display = items.length ? 'none' : '';
   const countEl = document.getElementById('count-'+section);
-  if(countEl) countEl.textContent = items.length ? (items.length===1?'1 libro':items.length+' libros') : 'vacío';   setTimeout(()=>buildHero(section, grid, items), 0);
+  if(countEl) countEl.textContent = items.length ? (items.length===1?'1 libro':items.length+' libros') : 'vacío';
+  setTimeout(()=>buildHero(section, grid, items), 0);
   items.forEach(item=>{
     const card = document.createElement('div');
     card.className='book';
@@ -1558,7 +1587,47 @@ document.addEventListener('visibilitychange', ()=>{
 });
 window.addEventListener('pagehide', onHide);
 
-// ---- Cuadrícula: portada grande + carrusel ---- const heroSt = {}; function buildHero(section, grid, items){   const old = document.getElementById('hero-'+section); if(old) old.remove();   grid.classList.add('gcards');   if(!items.length) return;   const cards = Array.from(grid.children);   const h = (tag, cls, txt)=>{ const e = document.createElement(tag); if(cls) e.className = cls; if(txt!=null) e.textContent = txt; return e; };   const hero = h('div','ghero'); hero.id = 'hero-'+section;   const bg = h('div','gbg'), lab = h('div','glabel'), tt = h('div','gtitle'), au = h('div','gauthor'), go = h('button','ggo');   const num = h('div','gnum'), prev = h('button',null,'‹'), next = h('button',null,'›');   const tx = h('div','gtext'); tx.append(lab, tt, au, go);   const ctrl = h('div','gctrl'); ctrl.append(prev, next, h('div','gline'), num);   hero.append(bg, h('div','gscrim'), tx, ctrl);   let idx = Math.min(heroSt[section] || 0, items.length-1);   function sel(i, scroll){     idx = (i + items.length) % items.length; heroSt[section] = idx;     const it = items[idx], img = cards[idx].querySelector('.cover img');     hero.style.setProperty('--spine', it.coverColor || 'var(--epub)');     bg.style.backgroundImage = img ? 'url("'+img.src+'")' : '';     lab.textContent = section==='epub' ? 'EPUB' : section==='pdf' ? 'PDF' : 'Word';     tt.textContent = it.title || cleanTitle(it.name);     au.textContent = it.author || '';     go.textContent = readProgress(it) > 0.005 ? 'Continuar leyendo' : 'Ver libro';     num.textContent = String(idx+1).padStart(2,'0');     cards.forEach((c,k)=>c.classList.toggle('sel', k===idx));     if(scroll) grid.scrollTo({left: cards[idx].offsetLeft - grid.clientWidth/2 + cards[idx].offsetWidth/2, behavior:'smooth'});   }   go.addEventListener('click', ()=>openDetail(items[idx]));   prev.addEventListener('click', ()=>sel(idx-1, true));   next.addEventListener('click', ()=>sel(idx+1, true));   cards.forEach((c,k)=>c.addEventListener('click', ev=>{     if(/\b(list|shelf|editorial)\b/.test(grid.className)) return;     if(ev.target.closest('.actions, .del, .lbtn, .echap, .ecover-btn, .eyoutube')) return;     if(!c.classList.contains('sel')){ ev.stopImmediatePropagation(); sel(k, true); }   }, true));   grid.parentNode.insertBefore(hero, grid);   sel(idx, false); }  // ---- Pantalla de detalle del libro ----
+// ---- Cuadrícula: portada grande + carrusel ----
+const heroSt = {};
+function buildHero(section, grid, items){
+  const old = document.getElementById('hero-'+section); if(old) old.remove();
+  grid.classList.add('gcards');
+  if(!items.length) return;
+  const cards = Array.from(grid.children);
+  const h = (tag, cls, txt)=>{ const e = document.createElement(tag); if(cls) e.className = cls; if(txt!=null) e.textContent = txt; return e; };
+  const hero = h('div','ghero'); hero.id = 'hero-'+section;
+  const bg = h('div','gbg'), lab = h('div','glabel'), tt = h('div','gtitle'), au = h('div','gauthor'), go = h('button','ggo');
+  const num = h('div','gnum'), prev = h('button',null,'‹'), next = h('button',null,'›');
+  const tx = h('div','gtext'); tx.append(lab, tt, au, go);
+  const ctrl = h('div','gctrl'); ctrl.append(prev, next, h('div','gline'), num);
+  hero.append(bg, h('div','gscrim'), tx, ctrl);
+  let idx = Math.min(heroSt[section] || 0, items.length-1);
+  function sel(i, scroll){
+    idx = (i + items.length) % items.length; heroSt[section] = idx;
+    const it = items[idx], img = cards[idx].querySelector('.cover img');
+    hero.style.setProperty('--spine', it.coverColor || 'var(--epub)');
+    bg.style.backgroundImage = img ? 'url("'+img.src+'")' : '';
+    lab.textContent = section==='epub' ? 'EPUB' : section==='pdf' ? 'PDF' : 'Word';
+    tt.textContent = it.title || cleanTitle(it.name);
+    au.textContent = it.author || '';
+    go.textContent = readProgress(it) > 0.005 ? 'Continuar leyendo' : 'Ver libro';
+    num.textContent = String(idx+1).padStart(2,'0');
+    cards.forEach((c,k)=>c.classList.toggle('sel', k===idx));
+    if(scroll) grid.scrollTo({left: cards[idx].offsetLeft - grid.clientWidth/2 + cards[idx].offsetWidth/2, behavior:'smooth'});
+  }
+  go.addEventListener('click', ()=>openDetail(items[idx]));
+  prev.addEventListener('click', ()=>sel(idx-1, true));
+  next.addEventListener('click', ()=>sel(idx+1, true));
+  cards.forEach((c,k)=>c.addEventListener('click', ev=>{
+    if(/\b(list|shelf|editorial)\b/.test(grid.className)) return;
+    if(ev.target.closest('.actions, .del, .lbtn, .echap, .ecover-btn, .eyoutube')) return;
+    if(!c.classList.contains('sel')){ ev.stopImmediatePropagation(); sel(k, true); }
+  }, true));
+  grid.parentNode.insertBefore(hero, grid);
+  sel(idx, false);
+}
+
+// ---- Pantalla de detalle del libro ----
 let detailItem = null, detailUrl = null;
 function fmtDur(ms){
   const m = Math.round(ms/60000);
