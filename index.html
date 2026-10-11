@@ -478,6 +478,16 @@
   #readerBody.turn-light-prev{animation:ligeroPrev .3s ease-out}
   @keyframes ligeroNext{from{opacity:.4; transform:translateX(26px)} to{opacity:1; transform:none}}
   @keyframes ligeroPrev{from{opacity:.4; transform:translateX(-26px)} to{opacity:1; transform:none}}
+  /* Pie sin línea de progreso */
+  .foot-track{display:none}
+  /* Descanso visual: la barra superior se esconde mientras lees */
+  .reader-bar{transition:opacity .3s ease, transform .3s ease}
+  .reader.immersive .reader-bar{opacity:0; transform:translateY(-14px); pointer-events:none}
+  .reader.immersive.bar-on .reader-bar{opacity:.97; transform:none; pointer-events:auto}
+  .reader-handle{display:none; position:absolute; top:calc(env(safe-area-inset-top,0px) + 2px); left:50%; transform:translateX(-50%); width:84px; height:28px; background:none; border:none; padding:0; z-index:12; cursor:pointer; -webkit-tap-highlight-color:transparent; transition:opacity .3s ease}
+  .reader-handle::before{content:''; display:block; width:38px; height:4px; border-radius:4px; background:var(--ink-soft); opacity:.3; margin:12px auto 0}
+  .reader.immersive .reader-handle{display:block}
+  .reader.immersive.bar-on .reader-handle{opacity:0; pointer-events:none}
   .page-nav{position:absolute; inset:0; display:flex; justify-content:space-between; z-index:3; pointer-events:none}
   .page-nav .zone{width:16%; pointer-events:auto}
   .page-arrow{
@@ -644,6 +654,7 @@
 <button class="fab epub" id="fabAdd" title="Agregar">+</button>
 
 <div class="reader hidden" id="reader">
+  <button class="reader-handle" id="readerHandle" aria-label="Mostrar u ocultar la barra"></button>
   <div class="reader-bar">
     <button id="closeReader" title="Salir" aria-label="Salir">←</button>
     <span id="readerTitle"></span>
@@ -1360,7 +1371,7 @@ function updatePageCounter(){
   if(currentItem.section==='pdf' && pdfDoc){ cur = pdfPageNum; total = pdfDoc.numPages; }
   else if(pageWrapEl && pageStep){ cur = colPage+1; total = colTotal(); }
   if(!total){ pageCounter.textContent = 'Cargando…'; return; }
-  pageCounter.textContent = 'Página '+cur+' de '+total;
+  pageCounter.textContent = 'Página '+cur;
   const p = total>1 ? (cur-1)/(total-1) : 1;
   footFill.style.width = (p*100)+'%';
   footDot.style.left = (p*100)+'%';
@@ -1420,7 +1431,7 @@ async function openReader(item, target){
   readerTitle.textContent = item.title || item.name;
   readerBody.className=''; readerBody.removeAttribute('style');
   readerBody.innerHTML = '<div class="status">Abriendo…</div>';
-  readerEl.classList.remove('hidden');
+  readerEl.classList.remove('hidden'); readerEl.classList.add('immersive'); readerEl.classList.remove('bar-on');
   highlightBtn.classList.add('hidden-inline');
   pageNav.classList.remove('hide'); arrowPrev.classList.remove('hide'); arrowNext.classList.remove('hide');
   readerFoot.classList.remove('hide'); pageCounter.textContent = 'Cargando…';
@@ -1657,7 +1668,7 @@ function setupHighlightSelection(){
       const range = sel.getRangeAt(0);
       if(!readerBody.contains(range.commonAncestorContainer)){ highlightBtn.classList.add('hidden-inline'); return; }
       pendingRange = range.cloneRange();
-      highlightBtn.classList.remove('hidden-inline');
+      highlightBtn.classList.remove('hidden-inline'); barraVisible(true);
       highlightBtn.onclick = async ()=>{
         const container = findHighlightContainer(pendingRange.startContainer);
         if(!container){ highlightBtn.classList.add('hidden-inline'); return; }
@@ -1974,6 +1985,21 @@ function turnAnim(dir){
   }catch(e){ /* si algo falla, la página igual cambia sin efecto */ }
 }
 readerBody.addEventListener('animationend', ()=>readerBody.classList.remove('turn-next','turn-prev','turn-light-next','turn-light-prev'));
+
+// Descanso visual: la barra superior se muestra con la manija de arriba y se esconde sola
+let barTimer = null;
+function barraVisible(on){
+  clearTimeout(barTimer);
+  readerEl.classList.toggle('bar-on', !!on);
+  if(on) barTimer = setTimeout(()=>readerEl.classList.remove('bar-on'), 5000);
+}
+document.getElementById('readerHandle').addEventListener('click', ()=>barraVisible(!readerEl.classList.contains('bar-on')));
+readerMain.addEventListener('click', ()=>{
+  if(!readerEl.classList.contains('bar-on')) return;
+  if(!highlightBtn.classList.contains('hidden-inline')) return;
+  barraVisible(false);
+});
+document.querySelector('.reader-bar').addEventListener('click', ()=>{ if(readerEl.classList.contains('bar-on')) barraVisible(true); });
 
 // Registro del Service Worker para PWA
 if ('serviceWorker' in navigator) {
