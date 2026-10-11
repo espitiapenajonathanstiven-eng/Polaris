@@ -1244,7 +1244,7 @@ async function renderShelf(section){
   const grid = document.getElementById('grid-'+section);
   const empty = document.getElementById('empty-'+section);
   let items = [];
-  try{ items = await dbAll(section); }catch(err){ console.error(err); }
+  try{ items = (await dbAll(section)).filter(b=>!b.read); }catch(err){ console.error(err); }
   shelfUrls[section].forEach(u=>URL.revokeObjectURL(u));
   shelfUrls[section] = [];
   grid.innerHTML='';
@@ -1279,7 +1279,7 @@ async function renderShelf(section){
       ev.stopPropagation();
       item.read = !item.read;
       try{ await dbAdd(item); }catch(err){}
-      readBtn.classList.toggle('on', item.read);
+      readBtn.classList.toggle('on', item.read);       if(item.read) renderShelf(section);
     });
     actions.append(favBtn, readBtn);
     const cover = document.createElement('div');
