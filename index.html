@@ -418,6 +418,29 @@
   }
   .grid.editorial .book .ecover-btn.swatch{background:var(--spine, var(--epub))}
   .grid.editorial .book .meta{display:none}
+  /* ===== Pantalla de detalle del libro ===== */
+  .detail{position:fixed; inset:0; z-index:9; overflow-y:auto; -webkit-overflow-scrolling:touch; background:#1b1916; color:#fff; isolation:isolate}
+  .detail.hidden{display:none}
+  .detail .dbg{position:fixed; inset:0; z-index:-2; background:var(--spine,var(--epub)) center/cover; filter:blur(30px) brightness(.5) saturate(1.2); transform:scale(1.3)}
+  .detail .dwrap{max-width:430px; margin:0 auto; padding:calc(env(safe-area-inset-top,0px) + 14px) 18px calc(110px + env(safe-area-inset-bottom,0px))}
+  .detail .dback{background:rgba(255,255,255,.14); border:none; color:#fff; width:38px; height:38px; border-radius:50%; font-size:1.2rem; cursor:pointer}
+  .detail .dhead{display:flex; gap:16px; margin:16px 0 20px; align-items:flex-end}
+  .detail .dcover{width:112px; aspect-ratio:2/3; border-radius:10px; background:var(--spine,var(--epub)) center/cover; flex-shrink:0; box-shadow:0 14px 30px rgba(0,0,0,.5)}
+  .detail h2{font-family:'Source Serif 4',serif; font-size:1.45rem; line-height:1.2; margin:0 0 6px}
+  .detail .dauth{font-size:.8rem; color:rgba(255,255,255,.7)}
+  .detail .dgrid{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+  .detail .tile{border-radius:22px; padding:16px; color:#1b1916; min-height:118px; display:flex; flex-direction:column}
+  .detail .tile.wide{grid-column:1 / -1; min-height:0}
+  .detail .tile small{font-size:.68rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; opacity:.75}
+  .detail .tile b{font-family:'Source Serif 4',serif; font-size:2rem; line-height:1.1; margin:8px 0 4px}
+  .detail .tile span{font-size:.74rem; opacity:.8; line-height:1.3}
+  .detail .t-prog{background:#F7D96A} .detail .t-time{background:#F7A35C} .detail .t-sess{background:#B9A3F5} .detail .t-streak{background:#A6E36B}
+  .detail .bar{height:8px; border-radius:8px; background:rgba(0,0,0,.15); margin:10px 0 8px; overflow:hidden}
+  .detail .bar i{display:block; height:100%; background:#1b1916; border-radius:8px}
+  .detail .dlog{margin-top:20px; background:rgba(255,255,255,.08); border-radius:22px; padding:16px}
+  .detail .dlog h3{margin:0 0 10px; font-size:.78rem; text-transform:uppercase; letter-spacing:.06em; opacity:.8}
+  .detail .lrow{display:flex; justify-content:space-between; padding:9px 0; border-top:1px solid rgba(255,255,255,.12); font-size:.85rem}
+  .detail .dread{position:fixed; left:50%; translate:-50% 0; bottom:calc(18px + env(safe-area-inset-bottom,0px)); width:calc(100% - 36px); max-width:394px; padding:16px; border:none; border-radius:999px; background:#fff; color:#111; font-weight:600; font-size:1rem; cursor:pointer}
   .reader{
     position:fixed; inset:0; background:var(--paper); z-index:10;
     display:flex; flex-direction:column; overflow:hidden;
@@ -715,6 +738,7 @@
 
 <button class="fab epub" id="fabAdd" title="Agregar">+</button>
 
+<div class="detail hidden" id="detail"></div>
 <div class="reader hidden" id="reader">
   <button class="reader-handle" id="readerHandle" aria-label="Mostrar u ocultar la barra"></button>
   <div class="reader-bar">
@@ -1306,7 +1330,7 @@ async function renderShelf(section){
     const meta = document.createElement('div');
     meta.className='meta'; meta.textContent = formatSize(item.size) + (pf > 0.005 ? ' · '+Math.round(pf*100)+'% leído' : '');
     card.appendChild(meta);
-    card.addEventListener('click',()=>openReader(item));
+    card.addEventListener('click',()=>openDetail(item));
     grid.appendChild(card);
   });
 }
@@ -1485,6 +1509,7 @@ document.addEventListener('keydown', e=>{
 });
 
 function closeReader(){
+  segCommit();
   const item = currentItem;
   const section = item && item.section;
   const saving = saveProgressNow();
@@ -1500,10 +1525,105 @@ function closeReader(){
   progressReady = false;
   currentItem = null;
   if(section) saving.then(()=>renderShelf(section));
+  if(detailItem) saving.then(()=>openDetail(detailItem));
+}
+
+// ---- Estadísticas de lectura por libro (tiempo, lecturas, racha) ----
+const statKey = id => 'polaris-stats:'+id;
+function readStats(item){
+  try{ const v = JSON.parse(localStorage.getItem(statKey(item.id))); if(v) return v; }catch(e){}
+  return {ms:0, sessions:0, days:[], log:[]};
+}
+let readSeg = null, pausedItem = null;
+function segStart(item, isNew){ readSeg = {item, start:Date.now(), isNew}; }
+function segCommit(){
+  if(!readSeg) return;
+  const {item, start, isNew} = readSeg; readSeg = null;
+  const ms = Math.min(Date.now()-start, 3*3600*1000);
+  if(ms < 3000) return;
+  const st = readStats(item);
+  st.ms += ms; st.last = Date.now(); st.log = st.log || [];
+  if(isNew || !st.log.length){ st.sessions = (st.sessions||0)+1; st.log.unshift({t:Date.now(), ms}); }
+  else st.log[0].ms += ms;
+  st.log = st.log.slice(0,30);
+  const d = new Date().toLocaleDateString('en-CA');
+  st.days = st.days || []; if(!st.days.includes(d)) st.days.push(d); st.days = st.days.slice(-400);
+  try{ localStorage.setItem(statKey(item.id), JSON.stringify(st)); }catch(e){}
+}
+function onHide(){ const sg = readSeg; segCommit(); if(sg) pausedItem = sg.item; }
+document.addEventListener('visibilitychange', ()=>{
+  if(document.hidden) onHide();
+  else if(pausedItem){ if(currentItem === pausedItem) segStart(pausedItem, false); pausedItem = null; }
+});
+window.addEventListener('pagehide', onHide);
+
+// ---- Pantalla de detalle del libro ----
+let detailItem = null, detailUrl = null;
+function fmtDur(ms){
+  const m = Math.round(ms/60000);
+  if(m < 1) return ms > 0 ? '< 1 min' : '0 min';
+  if(m < 60) return m+' min';
+  const h = Math.floor(m/60), r = m%60;
+  return h+' h'+(r ? ' '+r+' min' : '');
+}
+function streakOf(days){
+  const set = new Set(days), key = x => x.toLocaleDateString('en-CA');
+  const d = new Date(); if(!set.has(key(d))) d.setDate(d.getDate()-1);
+  let n = 0; while(set.has(key(d))){ n++; d.setDate(d.getDate()-1); }
+  return n;
+}
+function closeDetail(){
+  document.getElementById('detail').classList.add('hidden');
+  if(detailUrl){ URL.revokeObjectURL(detailUrl); detailUrl = null; }
+  detailItem = null;
+}
+function openDetail(item){
+  detailItem = item;
+  const box = document.getElementById('detail');
+  if(detailUrl){ URL.revokeObjectURL(detailUrl); detailUrl = null; }
+  let src = item.coverUrl || null;
+  if(!src && item.coverBlob){ src = detailUrl = URL.createObjectURL(item.coverBlob); }
+  const st = readStats(item), pf = readProgress(item), pct = Math.round(pf*100);
+  const h = (tag, cls, txt)=>{ const e = document.createElement(tag); if(cls) e.className = cls; if(txt!=null) e.textContent = txt; return e; };
+  const tile = (cls, label, big, sub)=>{ const t = h('div','tile '+cls); t.append(h('small',null,label), h('b',null,big), h('span',null,sub)); return t; };
+  box.innerHTML = '';
+  box.style.setProperty('--spine', item.coverColor || 'var(--epub)');
+  const bg = h('div','dbg'); if(src) bg.style.backgroundImage = 'url("'+src+'")';
+  const wrap = h('div','dwrap');
+  const back = h('button','dback','←'); back.setAttribute('aria-label','Volver'); back.addEventListener('click', closeDetail);
+  const head = h('div','dhead');
+  const cv = h('div','dcover'); if(src) cv.style.backgroundImage = 'url("'+src+'")';
+  const ti = h('div'); ti.append(h('h2',null,item.title || cleanTitle(item.name)));
+  if(item.author) ti.append(h('div','dauth',item.author));
+  head.append(cv, ti);
+  const grid = h('div','dgrid');
+  const prog = h('div','tile wide t-prog'); const bar = h('div','bar'); const fill = h('i'); fill.style.width = pct+'%'; bar.append(fill);
+  prog.append(h('small',null,'Progreso'), h('b',null,pct+'%'), bar,
+    h('span',null, st.last ? 'Última lectura: '+new Date(st.last).toLocaleDateString('es',{day:'numeric',month:'short'}) : 'Aún no has empezado'));
+  const sess = st.sessions || 0, streak = streakOf(st.days || []);
+  grid.append(prog,
+    tile('t-time','Tiempo', fmtDur(st.ms||0), 'leyendo este libro'),
+    tile('t-sess','Lecturas', String(sess), sess ? 'Promedio: '+fmtDur((st.ms||0)/sess)+' por lectura' : 'Abre el libro para empezar'),
+    tile('t-streak','Racha', String(streak), streak===1 ? 'día seguido leyendo' : 'días seguidos leyendo'));
+  wrap.append(back, head, grid);
+  if(st.log && st.log.length){
+    const lg = h('div','dlog'); lg.append(h('h3',null,'Cada lectura'));
+    st.log.slice(0,8).forEach(e=>{
+      const r = h('div','lrow'); const dt = new Date(e.t);
+      r.append(h('span',null, dt.toLocaleDateString('es',{day:'numeric',month:'short'})+' · '+dt.toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'})), h('b',null,fmtDur(e.ms)));
+      lg.append(r);
+    });
+    wrap.append(lg);
+  }
+  const rd = h('button','dread', pf > 0.005 ? 'Continuar leyendo' : 'Leer');
+  rd.addEventListener('click', ()=>openReader(item));
+  box.append(bg, wrap, rd);
+  box.classList.remove('hidden');
 }
 
 async function openReader(item, target){
   currentItem = item;
+  segStart(item, true);
   progressReady = false;
   const savedFrac = readProgress(item);
   readerTitle.textContent = item.title || item.name;
@@ -1940,7 +2060,7 @@ function buildSimpleCard(item, kind){
       await dbAdd(item); renderSpecialScreen(kind);
     });
     card.appendChild(del);
-    card.addEventListener('click',()=>openReader(item));
+    card.addEventListener('click',()=>openDetail(item));
   }
   return card;
 }
