@@ -1563,11 +1563,13 @@ async function renderPdfPage(){
   const page = await pdfDoc.getPage(pdfPageNum);
   const unscaled = page.getViewport({scale:1});
   const scale = Math.min((readerBody.clientWidth-28)/unscaled.width, (readerBody.clientHeight-28)/unscaled.height);
-  const viewport = page.getViewport({scale});
+  // Se dibuja a la resolución real de la pantalla (devicePixelRatio) para que el PDF se vea nítido
+  const dpr = Math.min(window.devicePixelRatio || 1, 3);
+  const viewport = page.getViewport({scale: scale*dpr});
   readerBody.innerHTML='';
   const canvas = document.createElement('canvas');
-  canvas.width = viewport.width; canvas.height = viewport.height;
-  canvas.style.cssText = 'display:block; margin:0 auto; box-shadow:0 4px 18px rgba(0,0,0,.18)';
+  canvas.width = Math.floor(viewport.width); canvas.height = Math.floor(viewport.height);
+  canvas.style.cssText = 'display:block; margin:0 auto; box-shadow:0 4px 18px rgba(0,0,0,.18); width:'+(viewport.width/dpr)+'px; height:'+(viewport.height/dpr)+'px';
   readerBody.appendChild(canvas);
   await page.render({canvasContext:canvas.getContext('2d'), viewport}).promise;
   updatePageCounter();
