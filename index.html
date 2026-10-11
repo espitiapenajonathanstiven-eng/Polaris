@@ -473,6 +473,11 @@
   @keyframes flipPrev{from{transform:rotateY(0deg)} to{transform:rotateY(180deg)}}
   @keyframes flipShade{0%{opacity:0} 55%{opacity:.9} 100%{opacity:.9}}
   @keyframes flipCast{0%{opacity:0} 45%{opacity:1} 100%{opacity:0}}
+  /* Efecto ligero para libros grandes */
+  #readerBody.turn-light-next{animation:ligeroNext .3s ease-out}
+  #readerBody.turn-light-prev{animation:ligeroPrev .3s ease-out}
+  @keyframes ligeroNext{from{opacity:.4; transform:translateX(26px)} to{opacity:1; transform:none}}
+  @keyframes ligeroPrev{from{opacity:.4; transform:translateX(-26px)} to{opacity:1; transform:none}}
   .page-nav{position:absolute; inset:0; display:flex; justify-content:space-between; z-index:3; pointer-events:none}
   .page-nav .zone{width:16%; pointer-events:auto}
   .page-arrow{
@@ -1308,7 +1313,14 @@ function layoutPages(){
     snapBlock(box);
   });
   // Una imagen nunca se parte entre dos hojas: si no cabe en lo que queda de la hoja, pasa entera a la siguiente
-  Array.from(pageWrapEl.children).forEach(ch=>{
+  Array.from(pageWrapEl.children).forEach((ch, idx)=>{
+    // Cada capítulo empieza en una hoja nueva (deja en blanco lo que sobre de la anterior)
+    ch.style.marginTop = '0px';
+    if(idx > 0 && ch.id && ch.id.indexOf('spine-') === 0 && (ch.textContent.trim() || ch.querySelector('img, svg, image'))){
+      const topC = ch.getBoundingClientRect().top - pageWrapEl.getBoundingClientRect().top;
+      const remC = ((topC % pageStep) + pageStep) % pageStep;
+      if(remC > 1.5 && pageStep - remC > 1.5) ch.style.marginTop = (pageStep - remC)+'px';
+    }
     ch.querySelectorAll('.imgbox').forEach(box=>{
       box.style.marginTop = '0px';
       const top = box.getBoundingClientRect().top - pageWrapEl.getBoundingClientRect().top;
@@ -1930,14 +1942,19 @@ enrichPending();
 // Animación de paso de página (EPUB, PDF y Word)
 function turnAnim(dir){
   try{
+    if(window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches) return;
     const main = document.getElementById('readerMain');
     if(!main || !readerBody.firstChild) return;
-    if(window.matchMedia && matchMedia('(prefers-reduced-motion:reduce)').matches) return;
     main.querySelectorAll('.flip-stage').forEach(n=>n.remove());
     const ahora = Date.now();
     const rapido = ahora - (window._ultimoGiro||0) < 750;
     window._ultimoGiro = ahora;
     if(rapido) return;
+    // Libros grandes: efecto ligero, sin copiar la página (copiarla es lo que los trababa)
+    if(pageWrapEl && colTotal() > 40){
+      readerBody.classList.add('turn-light-'+dir);
+      return;
+    }
     const mr = main.getBoundingClientRect(), br = readerBody.getBoundingClientRect();
     const stage = document.createElement('div');
     stage.className = 'flip-stage ' + dir;
@@ -1956,7 +1973,7 @@ function turnAnim(dir){
     setTimeout(()=>stage.remove(), 750);
   }catch(e){ /* si algo falla, la página igual cambia sin efecto */ }
 }
-readerBody.addEventListener('animationend', ()=>readerBody.classList.remove('turn-next','turn-prev'));
+readerBody.addEventListener('animationend', ()=>readerBody.classList.remove('turn-next','turn-prev','turn-light-next','turn-light-prev'));
 
 // Registro del Service Worker para PWA
 if ('serviceWorker' in navigator) {
