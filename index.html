@@ -238,6 +238,55 @@
   .grid.list .book .cover.swatch{width:26px; height:34px}
   .grid.list .book .name{flex:1}
   .grid.list .book .del{position:static; margin-left:8px}
+    /* ===== Vista Lista: tarjetas grandes ===== */
+  .book .lpill, .book .lchips, .book .lbtn{display:none}
+  .grid.list{gap:18px; max-width:430px; margin-left:auto; margin-right:auto}
+  .grid.list .book.rich{
+    position:relative; isolation:isolate; overflow:hidden; flex-direction:column; align-items:stretch;
+    gap:12px; padding:0 18px 18px; border:none; border-radius:28px; color:#fff; min-height:0;
+    background:var(--spine,var(--epub)); box-shadow:0 12px 32px rgba(0,0,0,.2);
+  }
+  .grid.list .book.rich .bg{
+    position:absolute; inset:0; z-index:-2; background-size:cover; background-position:center;
+    filter:blur(22px) brightness(.7) saturate(1.2); transform:scale(1.3);
+  }
+  .grid.list .book.rich .scrim{
+    display:block; position:absolute; inset:0; z-index:-1;
+    background:linear-gradient(180deg,rgba(0,0,0,.05) 0%,rgba(0,0,0,.25) 45%,rgba(0,0,0,.6) 100%);
+  }
+  .grid.list .book.rich .eherowrap{display:flex; justify-content:center; padding:24px 0 6px}
+  .grid.list .book.rich .hero{
+    width:46%; max-width:170px; aspect-ratio:2/3; border-radius:12px;
+    background-size:cover; background-position:center; box-shadow:0 16px 36px rgba(0,0,0,.5);
+  }
+  .grid.list .book.rich .cover, .grid.list .book.rich .author,
+  .grid.list .book.rich .meta, .grid.list .book.rich .eprog{display:none}
+  .grid.list .book.rich .main-text{display:flex; flex-wrap:wrap; align-items:flex-start; gap:8px 10px}
+  .grid.list .book.rich .name{order:1; flex:1 1 0; min-width:0; font-size:1.2rem; font-weight:700; line-height:1.2; color:#fff}
+  .grid.list .book.rich .lpill{
+    order:2; display:inline-block; flex-shrink:0; background:rgba(0,0,0,.45);
+    padding:5px 12px; border-radius:20px; font-size:.75rem; font-weight:600;
+  }
+  .grid.list .book.rich .edesc{
+    order:3; flex:0 0 100%; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical;
+    overflow:hidden; font-size:.85rem; line-height:1.45; color:rgba(255,255,255,.78);
+  }
+  .grid.list .book.rich .lchips{display:flex; flex-wrap:wrap; gap:8px}
+  .grid.list .book.rich .lchip{background:rgba(255,255,255,.18); padding:5px 12px; border-radius:20px; font-size:.72rem; font-weight:500}
+  .grid.list .book.rich .lbtn{
+    display:block; width:100%; margin-top:4px; padding:15px; border:none; border-radius:999px;
+    background:#fff; color:#111; font-size:.95rem; font-weight:600; cursor:pointer; transition:transform .15s;
+  }
+  .grid.list .book.rich .lbtn:active{transform:scale(.97)}
+  .grid.list .book.rich .del{
+    position:absolute; z-index:3; top:14px; left:14px; right:auto; margin:0; width:30px; height:30px; padding:0;
+    border-radius:50%; background:rgba(0,0,0,.4); color:#fff; font-size:.8rem;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .grid.list .book.rich .actions{position:absolute; z-index:3; top:14px; right:14px; margin:0}
+  .grid.list .book.rich .actions button{background:rgba(0,0,0,.4); color:#fff}
+  .grid.list .book.rich .actions .fav.on{color:#ff6b86}
+  .grid.list .book.rich .actions .readmark.on{color:#7fe0a0}
 
   .grid.shelf{
     display:flex; overflow-x:auto; align-items:flex-end; gap:5px;
@@ -1207,7 +1256,7 @@ async function renderShelf(section){
       pr.textContent = 'Continuar leyendo · '+Math.round(pf*100)+'%'; mainText.appendChild(pr);
     }
 
-    card.append(bg, eherowrap, scrim, del, actions, cover, mainText);
+    card.append(bg, eherowrap, scrim, del, actions, cover, mainText);      // --- Vista Lista (tarjeta grande) ---     card.classList.add('rich');     const lpill = document.createElement('span'); lpill.className='lpill';     lpill.textContent = section==='epub' ? 'EPUB' : section==='pdf' ? 'PDF' : 'Word';     mainText.appendChild(lpill);     const lchips = document.createElement('div'); lchips.className='lchips';     [item.author, formatSize(item.size), pf > 0.005 ? Math.round(pf*100)+'% leído' : null].forEach(t=>{       if(!t) return;       const c = document.createElement('span'); c.className='lchip'; c.textContent = t; lchips.appendChild(c);     });     card.appendChild(lchips);     const lbtn = document.createElement('button'); lbtn.className='lbtn';     lbtn.textContent = pf > 0.005 ? 'Continuar leyendo' : 'Leer';     lbtn.addEventListener('click', ev=>{ ev.stopPropagation(); openReader(item); });     card.appendChild(lbtn);
     if(item.author){
       const au = document.createElement('div'); au.className='author'; au.textContent = item.author; card.appendChild(au);
     }
