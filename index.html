@@ -238,7 +238,7 @@
   .grid.list .book .cover.swatch{width:26px; height:34px}
   .grid.list .book .name{flex:1}
   .grid.list .book .del{position:static; margin-left:8px}
-    /* ===== Vista Lista: tarjetas grandes ===== */
+  /* ===== Vista Lista: tarjetas grandes ===== */
   .book .lpill, .book .lchips, .book .lbtn{display:none}
   .grid.list{gap:18px; max-width:430px; margin-left:auto; margin-right:auto}
   .grid.list .book.rich{
@@ -1256,7 +1256,23 @@ async function renderShelf(section){
       pr.textContent = 'Continuar leyendo · '+Math.round(pf*100)+'%'; mainText.appendChild(pr);
     }
 
-    card.append(bg, eherowrap, scrim, del, actions, cover, mainText);      // --- Vista Lista (tarjeta grande) ---     card.classList.add('rich');     const lpill = document.createElement('span'); lpill.className='lpill';     lpill.textContent = section==='epub' ? 'EPUB' : section==='pdf' ? 'PDF' : 'Word';     mainText.appendChild(lpill);     const lchips = document.createElement('div'); lchips.className='lchips';     [item.author, formatSize(item.size), pf > 0.005 ? Math.round(pf*100)+'% leído' : null].forEach(t=>{       if(!t) return;       const c = document.createElement('span'); c.className='lchip'; c.textContent = t; lchips.appendChild(c);     });     card.appendChild(lchips);     const lbtn = document.createElement('button'); lbtn.className='lbtn';     lbtn.textContent = pf > 0.005 ? 'Continuar leyendo' : 'Leer';     lbtn.addEventListener('click', ev=>{ ev.stopPropagation(); openReader(item); });     card.appendChild(lbtn);
+    card.append(bg, eherowrap, scrim, del, actions, cover, mainText);
+
+    // --- Vista Lista (tarjeta grande) ---
+    card.classList.add('rich');
+    const lpill = document.createElement('span'); lpill.className='lpill';
+    lpill.textContent = section==='epub' ? 'EPUB' : section==='pdf' ? 'PDF' : 'Word';
+    mainText.appendChild(lpill);
+    const lchips = document.createElement('div'); lchips.className='lchips';
+    [item.author, formatSize(item.size), pf > 0.005 ? Math.round(pf*100)+'% leído' : null].forEach(t=>{
+      if(!t) return;
+      const c = document.createElement('span'); c.className='lchip'; c.textContent = t; lchips.appendChild(c);
+    });
+    card.appendChild(lchips);
+    const lbtn = document.createElement('button'); lbtn.className='lbtn';
+    lbtn.textContent = pf > 0.005 ? 'Continuar leyendo' : 'Leer';
+    lbtn.addEventListener('click', ev=>{ ev.stopPropagation(); openReader(item); });
+    card.appendChild(lbtn);
     if(item.author){
       const au = document.createElement('div'); au.className='author'; au.textContent = item.author; card.appendChild(au);
     }
