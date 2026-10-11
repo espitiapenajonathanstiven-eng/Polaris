@@ -419,10 +419,10 @@
   .grid.editorial .book .ecover-btn.swatch{background:var(--spine, var(--epub))}
   .grid.editorial .book .meta{display:none}
   /* ===== Pantalla de detalle del libro ===== */
-  .detail{position:fixed; inset:0; z-index:9; overflow-y:auto; -webkit-overflow-scrolling:touch; background:#1b1916; color:#fff; isolation:isolate}
+  .detail{position:fixed; inset:0; z-index:9; overflow-y:auto; -webkit-overflow-scrolling:touch; background:rgba(10,12,18,.55); -webkit-backdrop-filter:blur(26px); backdrop-filter:blur(26px); color:#fff; isolation:isolate}
   .detail.hidden{display:none}
-  .detail .dbg{position:fixed; inset:0; z-index:-2; background:var(--spine,var(--epub)) center/cover; filter:blur(38px) brightness(.72) saturate(1.6); transform:scale(1.4)}
-  .detail .dfade{position:fixed; left:0; right:0; bottom:0; height:150px; z-index:0; pointer-events:none; background:linear-gradient(180deg,transparent,rgba(8,10,16,.88))}
+  .detail .dbg{display:none; position:fixed; inset:0; z-index:-2; background:var(--spine,var(--epub)) center/cover; filter:blur(38px) brightness(.72) saturate(1.6); transform:scale(1.4)}
+  .detail .dfade{position:fixed; left:0; right:0; bottom:0; height:150px; z-index:0; pointer-events:none; background:linear-gradient(180deg,transparent,rgba(8,10,16,.35))}
   .detail .dwrap{max-width:430px; margin:0 auto; padding:calc(env(safe-area-inset-top,0px) + 14px) 18px calc(110px + env(safe-area-inset-bottom,0px))}
   .detail .dback{background:rgba(255,255,255,.14); border:none; color:#fff; width:38px; height:38px; border-radius:50%; font-size:1.2rem; cursor:pointer}
   .detail .dhead{display:flex; gap:16px; margin:16px 0 20px; align-items:flex-end}
@@ -430,7 +430,7 @@
   .detail h2{font-family:'Source Serif 4',serif; font-size:1.45rem; line-height:1.2; margin:0 0 6px}
   .detail .dauth{font-size:.8rem; color:rgba(255,255,255,.7)}
   .detail .dgrid{display:grid; grid-template-columns:1fr 1fr; gap:12px}
-  .detail .tile{border-radius:24px; padding:16px; color:#fff; min-height:118px; display:flex; flex-direction:column; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.22); background:linear-gradient(145deg,color-mix(in srgb,var(--ac) 40%,transparent),rgba(255,255,255,.06)); border:1px solid color-mix(in srgb,var(--ac) 50%,transparent); -webkit-backdrop-filter:blur(18px); backdrop-filter:blur(18px); box-shadow:0 8px 24px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.18)}
+  .detail .tile{border-radius:24px; padding:16px; color:#fff; min-height:118px; display:flex; flex-direction:column; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.22); background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.28); -webkit-backdrop-filter:blur(18px); backdrop-filter:blur(18px); box-shadow:0 8px 24px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.18)}
   .detail .tile.wide{grid-column:1 / -1; min-height:0}
   .detail .tile small{font-size:.68rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--ac)}
   .detail .tile b{font-family:'Source Serif 4',serif; font-size:2rem; line-height:1.1; margin:8px 0 4px}
@@ -438,7 +438,7 @@
   .detail .t-prog{--ac:#F7D96A} .detail .t-time{--ac:#FFA763} .detail .t-sess{--ac:#C3A9FF} .detail .t-streak{--ac:#A6E36B}
   .detail .bar{height:8px; border-radius:8px; background:rgba(255,255,255,.2); margin:10px 0 8px; overflow:hidden}
   .detail .bar i{display:block; height:100%; background:var(--ac); border-radius:8px; box-shadow:0 0 12px var(--ac)}
-  .detail .dlog{margin-top:14px; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.18); -webkit-backdrop-filter:blur(18px); backdrop-filter:blur(18px); border-radius:24px; padding:16px}
+  .detail .dlog{margin-top:14px; background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.28); -webkit-backdrop-filter:blur(18px); backdrop-filter:blur(18px); border-radius:24px; padding:16px}
   .detail .dlog h3{margin:0 0 10px; font-size:.78rem; text-transform:uppercase; letter-spacing:.06em; opacity:.8}
   .detail .lrow{display:flex; justify-content:space-between; padding:9px 0; border-top:1px solid rgba(255,255,255,.12); font-size:.85rem}
   .detail .dread{z-index:1; box-shadow:0 10px 28px rgba(0,0,0,.35); position:fixed; left:50%; translate:-50% 0; bottom:calc(18px + env(safe-area-inset-bottom,0px)); width:calc(100% - 36px); max-width:394px; padding:16px; border:none; border-radius:999px; background:#fff; color:#111; font-weight:600; font-size:1rem; cursor:pointer}
