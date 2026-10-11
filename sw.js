@@ -1,6 +1,6 @@
 // Polaris - service worker
 // Para forzar una actualización en los celulares, sube el número (v3, v4...)
-const CACHE = 'polaris-cache-v2';
+const CACHE = 'polaris-cache-v3';
 const ARCHIVOS = ['./', './index.html', './manifest.json', './icono.png'];
 
 self.addEventListener('install', e => {
