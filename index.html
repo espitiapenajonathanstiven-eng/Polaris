@@ -451,6 +451,20 @@
   .profile-head .avatar-preview{width:72px; height:72px; font-size:2rem; display:flex; align-items:center; justify-content:center; box-shadow:0 0 0 3px var(--paper), 0 0 0 5px var(--epub)}
   .profile-actions{display:flex; flex-direction:column; gap:8px; flex:1}
   .profile-actions .upload-btn-inline, .profile-actions button{width:100%; box-sizing:border-box; padding:10px; border-radius:10px; border:1px solid var(--line); background:var(--card); color:var(--ink); font:inherit; font-size:.85rem; text-align:center; cursor:pointer}
+  /* ===== Color ambiente: toda la pantalla toma el color de la portada ===== */
+  @property --amb{syntax:'<color>'; inherits:true; initial-value:#2f6f6a}
+  :root{transition:--amb .8s ease}
+  body{background:
+    radial-gradient(120% 45% at 50% 0%, color-mix(in srgb,var(--amb) 55%,transparent), transparent 80%),
+    linear-gradient(180deg, color-mix(in srgb,var(--amb) 28%,var(--paper)), var(--paper) 55%),
+    var(--paper)}
+  header.topbar h1{background:none; -webkit-background-clip:border-box; background-clip:border-box; color:color-mix(in srgb,var(--amb) 45%,var(--ink)); text-shadow:0 2px 14px color-mix(in srgb,var(--amb) 50%,transparent)}
+  #settingsBtn{box-shadow:0 0 0 3px var(--paper), 0 0 0 5px var(--amb), 0 8px 24px color-mix(in srgb,var(--amb) 55%,transparent)}
+  nav.tabs button{border-color:color-mix(in srgb,var(--amb) 40%,var(--ink-soft))}
+  nav.tabs button.active{background:linear-gradient(135deg,var(--amb),color-mix(in srgb,var(--amb) 70%,#000)); border-color:var(--amb); box-shadow:0 6px 18px color-mix(in srgb,var(--amb) 50%,transparent)}
+  .shelf-header .badge{box-shadow:0 0 0 2px var(--paper), 0 0 0 4px var(--amb)}
+  .fab.epub, .fab.pdf, .fab.word{background:linear-gradient(135deg,var(--amb),color-mix(in srgb,var(--amb) 70%,#000)); box-shadow:0 8px 22px color-mix(in srgb,var(--amb) 55%,transparent)}
+  .grid.editorial .book{border-radius:28px; box-shadow:0 14px 44px color-mix(in srgb,var(--spine,var(--epub)) 45%,transparent)}
   /* ===== Pantalla de detalle del libro ===== */
   .detail{position:fixed; inset:0; z-index:9; overflow-y:auto; -webkit-overflow-scrolling:touch; background:#1b1916; color:#fff; isolation:isolate}
   .detail.hidden{display:none}
@@ -901,6 +915,7 @@ document.querySelectorAll('nav.tabs button').forEach(btn=>{
     btn.classList.add('active');
     document.getElementById('view-'+btn.dataset.tab).classList.add('active');
     currentSection = btn.dataset.tab;
+    updateAmbient();
     fab.className = 'fab '+currentSection;
   });
 });
@@ -1261,7 +1276,7 @@ async function renderShelf(section){
   empty.style.display = items.length ? 'none' : '';
   const countEl = document.getElementById('count-'+section);
   if(countEl) countEl.textContent = items.length ? (items.length===1?'1 libro':items.length+' libros') : 'vacío';
-  setTimeout(()=>buildHero(section, grid, items), 0);
+  setTimeout(()=>{ buildHero(section, grid, items); if(section === currentSection) updateAmbient(); }, 0);
   items.forEach(item=>{
     const card = document.createElement('div');
     card.className='book';
@@ -1599,6 +1614,22 @@ document.addEventListener('visibilitychange', ()=>{
 });
 window.addEventListener('pagehide', onHide);
 
+// ---- Color ambiente: la pantalla toma el color de la portada ----
+let ambObs = null;
+function setAmb(c){ if(c) document.documentElement.style.setProperty('--amb', c); }
+function updateAmbient(){
+  const grid = document.getElementById('grid-'+currentSection); if(!grid) return;
+  const cards = Array.from(grid.querySelectorAll('.book'));
+  if(ambObs) ambObs.disconnect();
+  if(!cards.length){ document.documentElement.style.removeProperty('--amb'); return; }
+  setAmb(cards[0].style.getPropertyValue('--spine'));
+  ambObs = new IntersectionObserver(es=>{
+    if(!/\b(list|editorial)\b/.test(grid.className)) return;
+    es.forEach(e=>{ if(e.isIntersecting) setAmb(e.target.style.getPropertyValue('--spine')); });
+  }, {root: document.querySelector('main'), threshold:[.5]});
+  cards.forEach(c=>ambObs.observe(c));
+}
+
 // ---- Cuadrícula: portada grande + carrusel ----
 const heroSt = {};
 function buildHero(section, grid, items){
@@ -1626,6 +1657,7 @@ function buildHero(section, grid, items){
     idx = (i + items.length) % items.length; heroSt[section] = idx;
     const it = items[idx], img = cards[idx].querySelector('.cover img');
     hero.style.setProperty('--spine', it.coverColor || 'var(--epub)');
+    if(it.coverColor && section === currentSection) setAmb(it.coverColor);
     const url = img ? 'url("'+img.src+'")' : '';
     bg.style.backgroundImage = url; cv.style.backgroundImage = url;
     lab.textContent = section==='epub' ? 'EPUB' : section==='pdf' ? 'PDF' : 'Word';
@@ -2078,14 +2110,15 @@ document.getElementById('settingsBtn').addEventListener('click',()=>openPanel('p
 // ---- Foto de perfil y saludo ----
 function applyAvatar(){
   let url = ''; try{ url = localStorage.getItem('polaris-avatar') || ''; }catch(e){}
-  const bi = url ? 'url("'+url+'")' : '';
+  // Si el usuario no ha elegido foto, se muestra el ícono de la app
+  const bi = 'url("'+(url || './icono.png')+'")';
   [document.getElementById('settingsBtn'), document.getElementById('avatarPreview'), ...document.querySelectorAll('.shelf-header .badge')].forEach(el=>{
     if(!el) return;
     el.style.backgroundImage = bi;
-    el.style.backgroundSize = url ? 'cover' : '';
-    el.style.backgroundPosition = url ? 'center' : '';
-    if(el.classList.contains('badge') || el.id === 'avatarPreview') el.textContent = url ? '' : '👤';
-    if(el.id === 'settingsBtn') el.classList.toggle('has-photo', !!url);
+    el.style.backgroundSize = 'cover';
+    el.style.backgroundPosition = 'center';
+    if(el.classList.contains('badge') || el.id === 'avatarPreview') el.textContent = '';
+    if(el.id === 'settingsBtn') el.classList.add('has-photo');
   });
 }
 function pickAvatar(file){
