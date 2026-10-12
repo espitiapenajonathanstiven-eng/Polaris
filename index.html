@@ -1397,7 +1397,7 @@ function readProgress(item){
   return (typeof item.progress==='number') ? item.progress : 0;
 }
 function writeProgress(item, frac){
-  item.progress = frac;
+  item.progress = frac;   if(frac >= 0.999 && !item.read && !item.autoRead){ item.read = true; item.autoRead = true; }
   try{ localStorage.setItem(progKey(item.id), JSON.stringify({frac, t:Date.now()})); }catch(e){}
 }
 function currentFrac(){
