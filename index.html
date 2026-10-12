@@ -14,7 +14,7 @@
 <link rel="icon" type="image/png" href="icono.png">
 <link rel="apple-touch-icon" href="icono.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Inter:wght@400;500;600&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
 <style>
   :root{
     --paper:#EFE9DD; --ink:#242220; --ink-soft:#6b655d;
@@ -43,140 +43,31 @@
     display:flex; flex-direction:column;
   }
   header.topbar{
-    padding:18px 20px 10px; flex-shrink:0;
-    display:flex; justify-content:flex-start; align-items:flex-start; gap:12px;
-    position:relative;
-  }
-  header.topbar::after{
-    content:""; position:absolute; left:20px; right:20px; bottom:0; height:3px;
-    background:linear-gradient(90deg,var(--epub),var(--pdf),var(--word)); border-radius:3px;
-    opacity:.5;
+    padding:16px 20px 6px; flex-shrink:0; display:flex; flex-wrap:wrap; align-items:center;
+    gap:4px 14px; position:relative;
   }
   header.topbar h1{
-    font-family:'Source Serif 4',serif; font-weight:700; font-size:1.6rem;
-    margin:0 0 2px;
+    font-family:'Dancing Script',cursive; font-weight:700; font-size:2rem;
+    margin:0; flex:1; line-height:1.1;
   }
-  header.topbar p{margin:0; color:var(--ink-soft); font-size:.9rem}
+  header.topbar .hello{flex:0 0 100%; display:flex; flex-direction:column; gap:1px; padding-top:6px}
+  header.topbar .hello b{font-size:1rem; font-weight:600; color:var(--ink)}
+  header.topbar .hello span{font-size:.85rem; color:var(--ink-soft)}
   #settingsBtn{
-    background:none; border:1px solid var(--line); border-radius:8px;
-    width:36px; height:36px; font-size:1rem; cursor:pointer; color:var(--ink);
-    flex-shrink:0; order:-1;
+    width:52px; height:52px; border-radius:50%; border:2px solid var(--line); background-color:var(--line);
+    font-size:1.4rem; cursor:pointer; color:var(--ink-soft); padding:0; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
   }
-  #notice{
-    margin:0 20px 4px; font-size:.78rem; color:var(--ink-soft);
-    background:var(--card); border:1px solid var(--line); border-radius:8px;
-    padding:8px 12px; display:none;
-  }
-  #notice.show{display:block}
+  #settingsBtn.has-photo{font-size:0}
+  .avatar-preview{width:52px; height:52px; border-radius:50%; background:var(--line) center/cover; flex-shrink:0}
 
-  .panel-backdrop{
-    position:fixed; inset:0; background:rgba(0,0,0,.4); z-index:20; display:none;
-  }
-  .panel-backdrop.show{display:block}
-  .panel{
-    position:fixed; left:0; top:0; bottom:0; width:min(300px,85vw); background:var(--paper);
-    z-index:21; padding:calc(env(safe-area-inset-top,0px) + 18px) 20px 20px; overflow-y:auto;
-    border-right:1px solid var(--line);
-  }
-  .panel h3{font-family:'Source Serif 4',serif; margin:0 0 16px}
-  .panel h4{font-family:'Inter',sans-serif; font-size:.8rem; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-soft); margin:18px 0 10px}
-  .panel label{display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; font-size:.88rem}
-  .panel input[type=color]{
-    -webkit-appearance:none; appearance:none; width:34px; height:34px;
-    border:2px solid var(--line); border-radius:50%; padding:0; overflow:hidden; background:none;
-  }
-  .panel input[type=color]::-webkit-color-swatch-wrapper{padding:0; border-radius:50%}
-  .panel input[type=color]::-webkit-color-swatch{border:none; border-radius:50%}
-  .panel input[type=color]::-moz-color-swatch{border:none; border-radius:50%}
-  .hue-row{align-items:center}
-  .hue-row input.hueSlider{
-    flex:1; margin-left:14px; height:14px; border-radius:7px; outline:none;
-    -webkit-appearance:none; appearance:none;
-    background:linear-gradient(90deg,#ff0000,#ffe600,#2fe62f,#00e0e0,#2b4bff,#ff33e6,#ff0000);
-  }
-  .hue-row input.hueSlider::-webkit-slider-thumb{
-    -webkit-appearance:none; width:24px; height:24px; border-radius:50%;
-    background:var(--thumb-color,#fff); border:3px solid #fff;
-    box-shadow:0 0 0 1px rgba(0,0,0,.3), 0 1px 3px rgba(0,0,0,.3); cursor:pointer;
-  }
-  .hue-row input.hueSlider::-moz-range-thumb{
-    width:24px; height:24px; border-radius:50%; background:var(--thumb-color,#fff);
-    border:3px solid #fff; box-shadow:0 0 0 1px rgba(0,0,0,.3), 0 1px 3px rgba(0,0,0,.3); cursor:pointer;
-  }
-  .hue-row input.hueSlider::-moz-range-track{height:14px; border-radius:7px}
-
-  .theme-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:10px}
-  .theme-grid button{
-    display:flex; flex-direction:column; align-items:center; gap:5px;
-    padding:10px 4px; border-radius:9px; border:1px solid var(--line);
-    background:var(--card); color:var(--ink); font-size:.72rem; cursor:pointer; line-height:1.15;
-  }
-  .theme-grid button.on{border-color:var(--ink); font-weight:600}
-  .theme-grid .theme-dot{width:14px; height:14px; margin:0}
-  .panel .row{display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px}
-  .panel .row button{
-    flex:1; min-width:80px; padding:8px; border-radius:7px; border:1px solid var(--line); background:var(--card);
-    color:var(--ink); font-size:.8rem; cursor:pointer;
-  }
-  .panel .row button.on{border-color:var(--ink); font-weight:600}
-  .theme-dot{display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:6px; vertical-align:middle}
-  .panel .close{
-    display:block; margin-top:8px; width:100%; padding:10px; border-radius:8px;
-    background:var(--ink); color:var(--paper); border:none; font-size:.88rem; cursor:pointer;
-  }
-  .menu-list{display:flex; flex-direction:column; gap:4px; margin-bottom:18px}
-  .menu-item{
-    display:block; width:100%; text-align:left; padding:12px 10px; border-radius:9px;
-    border:none; background:none; color:var(--ink); font-size:.95rem; cursor:pointer;
-  }
-  .menu-item.on{background:var(--card); font-weight:600}
-  .menu-item.config-open{border:1px solid var(--line); border-radius:9px; margin-bottom:8px}
-  .back-link{
-    background:none; border:none; color:var(--ink-soft); font-size:.85rem; padding:0; margin-bottom:10px; cursor:pointer;
-  }
-  .upload-btn-inline{
-    display:block; text-align:center; padding:9px; border-radius:7px; border:1px solid var(--line);
-    background:var(--card); color:var(--ink); font-size:.82rem; cursor:pointer;
-  }
-  .upload-btn-inline input{display:none}
-
-  .screen-header{
-    display:flex; align-items:center; gap:14px; padding:16px 20px 4px;
-  }
-  .screen-header button{
-    background:none; border:1px solid var(--line); border-radius:7px; padding:6px 12px;
-    color:var(--ink); font-size:.82rem; cursor:pointer;
-  }
-  .screen-header h2{font-family:'Source Serif 4',serif; font-size:1.1rem; margin:0}
-
-  .book .actions{position:absolute; top:8px; right:8px; display:flex; gap:4px}
-  .book .actions button{
-    background:rgba(0,0,0,.08); border:none; border-radius:50%; width:26px; height:26px;
-    font-size:.85rem; cursor:pointer; color:var(--ink-soft); display:flex; align-items:center; justify-content:center;
-  }
-  .book .actions .fav.on{color:#d1435b}
-  .book .actions .readmark.on{color:var(--epub)}
-  .book .del{right:auto; left:8px}
-  .grid.list .book .actions{position:static; margin-left:4px}
-  .book.trashed-card .restore, .book.trashed-card .forget{
-    margin-top:8px; width:100%; padding:7px; border-radius:6px; border:1px solid var(--line);
-    background:var(--card); color:var(--ink); font-size:.78rem; cursor:pointer;
-  }
-
-  nav.tabs{
-    display:flex; gap:4px; padding:14px 16px 0; flex-shrink:0;
-    border-bottom:1px solid var(--line);
-  }
+  nav.tabs{display:flex; gap:10px; padding:12px 20px 4px; flex-shrink:0}
   nav.tabs button{
-    flex:1; background:none; border:none; cursor:pointer;
-    font-family:'Inter',sans-serif; font-size:.95rem; font-weight:600;
-    color:var(--ink-soft); padding:0 0 12px; position:relative;
+    flex:1; background:none; border:1.5px solid var(--ink-soft); border-radius:999px; cursor:pointer;
+    font-family:'Inter',sans-serif; font-size:.9rem; font-weight:600; color:var(--ink-soft);
+    padding:9px 0; transition:background .2s,color .2s,border-color .2s;
   }
-  nav.tabs button.active{color:var(--ink)}
-  nav.tabs button.active::after{
-    content:""; position:absolute; left:10%; right:10%; bottom:-1px; height:3px;
-    background:var(--tab-color); border-radius:3px 3px 0 0;
-  }
+  nav.tabs button.active{background:var(--tab-color); border-color:var(--tab-color); color:#fff}
   nav.tabs button[data-tab="epub"]{--tab-color:var(--epub)}
   nav.tabs button[data-tab="pdf"]{--tab-color:var(--pdf)}
   nav.tabs button[data-tab="word"]{--tab-color:var(--word)}
@@ -189,7 +80,7 @@
     display:flex; align-items:center; gap:10px; margin-bottom:16px;
   }
   .shelf-header .badge{
-    width:30px; height:30px; border-radius:50%; flex-shrink:0;
+    width:36px; height:36px; border-radius:50%; flex-shrink:0;
     display:flex; align-items:center; justify-content:center;
     color:#fff; font-family:'Source Serif 4',serif; font-weight:700; font-size:.95rem;
   }
@@ -219,7 +110,7 @@
   #view-epub .upload-btn{--accent:var(--epub); background:var(--epub)}
   #view-pdf .upload-btn{background:var(--pdf)}
   #view-word .upload-btn{background:var(--word)}
-  .upload-btn input{display:none}
+  .upload-btn input, .upload-btn-inline input{display:none}
 
   .grid{
     display:grid; grid-template-columns:repeat(auto-fill,minmax(130px,1fr)); gap:14px;
@@ -663,11 +554,9 @@
 <body>
 
 <header class="topbar">
-  <button id="settingsBtn" title="Menú">☰</button>
-  <div>
-    <h1>Polaris</h1>
-    <p>Tus libros, organizados por formato</p>
-  </div>
+  <button id="settingsBtn" title="Perfil y menú" aria-label="Perfil y menú">👤</button>
+  <h1>Polaris</h1>
+  <div class="hello"><b id="greeting"></b><span id="tagline"></span></div>
 </header>
 <div id="notice"></div>
 
@@ -688,6 +577,13 @@
 <div class="panel" id="configPanel" style="display:none">
   <button class="back-link" id="backFromConfig">← Menú</button>
   <h3>Configuración</h3>
+
+  <h4>Foto de perfil</h4>
+  <div class="row" style="align-items:center">
+    <div id="avatarPreview" class="avatar-preview"></div>
+    <label class="upload-btn-inline" style="flex:1">Elegir foto<input type="file" id="avatarInput" accept="image/*"></label>
+    <button id="avatarRemove">Quitar</button>
+  </div>
 
   <h4>Iniciar sesión</h4>
   <div class="row">
@@ -1218,6 +1114,7 @@ function buildInfo(item){
 document.querySelectorAll('input[type=file]').forEach(input=>{
   input.addEventListener('change', async (e)=>{
     const section = input.dataset.section;
+    if(!section) return;
     const added = [];
     for(const file of Array.from(e.target.files)){
       const rec = {id: uuid(), section, name:file.name, type:file.type, size:file.size, blob:file, addedAt:Date.now(), title:cleanTitle(file.name)};
@@ -1279,7 +1176,8 @@ async function renderShelf(section){
       ev.stopPropagation();
       item.read = !item.read;
       try{ await dbAdd(item); }catch(err){}
-      readBtn.classList.toggle('on', item.read);       if(item.read) renderShelf(section);
+      readBtn.classList.toggle('on', item.read);
+      if(item.read) renderShelf(section);
     });
     actions.append(favBtn, readBtn);
     const cover = document.createElement('div');
@@ -1397,7 +1295,8 @@ function readProgress(item){
   return (typeof item.progress==='number') ? item.progress : 0;
 }
 function writeProgress(item, frac){
-  item.progress = frac;   if(frac >= 0.999 && !item.read && !item.autoRead){ item.read = true; item.autoRead = true; }
+  item.progress = frac;
+  if(frac >= 0.999 && !item.read && !item.autoRead){ item.read = true; item.autoRead = true; }
   try{ localStorage.setItem(progKey(item.id), JSON.stringify({frac, t:Date.now()})); }catch(e){}
 }
 function currentFrac(){
@@ -2062,6 +1961,47 @@ function closeAllPanels(){
   document.getElementById('panelBackdrop').classList.remove('show');
 }
 document.getElementById('settingsBtn').addEventListener('click',()=>openPanel('panel'));
+
+// ---- Foto de perfil y saludo ----
+function applyAvatar(){
+  let url = ''; try{ url = localStorage.getItem('polaris-avatar') || ''; }catch(e){}
+  const bi = url ? 'url("'+url+'")' : '';
+  [document.getElementById('settingsBtn'), document.getElementById('avatarPreview'), ...document.querySelectorAll('.shelf-header .badge')].forEach(el=>{
+    if(!el) return;
+    el.style.backgroundImage = bi;
+    el.style.backgroundSize = url ? 'cover' : '';
+    el.style.backgroundPosition = url ? 'center' : '';
+    if(el.classList.contains('badge')) el.textContent = url ? '' : '👤';
+    if(el.id === 'settingsBtn') el.classList.toggle('has-photo', !!url);
+  });
+}
+function pickAvatar(file){
+  if(!file) return;
+  const img = new Image(), u = URL.createObjectURL(file);
+  img.onload = ()=>{
+    const S = 256, c = document.createElement('canvas'); c.width = c.height = S;
+    const m = Math.min(img.width, img.height);
+    c.getContext('2d').drawImage(img, (img.width-m)/2, (img.height-m)/2, m, m, 0, 0, S, S);
+    try{ localStorage.setItem('polaris-avatar', c.toDataURL('image/jpeg', .85)); }catch(e){}
+    URL.revokeObjectURL(u); applyAvatar();
+  };
+  img.src = u;
+}
+document.getElementById('avatarInput').addEventListener('change', e=>{ pickAvatar(e.target.files[0]); e.target.value = ''; });
+document.getElementById('avatarRemove').addEventListener('click', ()=>{ try{ localStorage.removeItem('polaris-avatar'); }catch(e){} applyAvatar(); });
+function setGreeting(){
+  const hr = new Date().getHours();
+  const slot = hr>=5 && hr<12 ? 0 : hr>=12 && hr<19 ? 1 : 2;
+  document.getElementById('greeting').textContent = ['Buenos días','Buenas tardes','Buenas noches'][slot];
+  const frases = [
+    ['Empieza el día con una buena lectura','Un café y unas páginas para arrancar','La mañana es perfecta para leer'],
+    ['Una tarde ideal para seguir leyendo','Haz una pausa y lee un rato','Tu libro te espera esta tarde'],
+    ['Cierra el día con un buen libro','La noche es para perderse en una historia','Unas páginas antes de dormir']
+  ][slot];
+  document.getElementById('tagline').textContent = frases[Math.floor(Math.random()*frases.length)];
+}
+applyAvatar(); setGreeting();
+document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) setGreeting(); });
 document.getElementById('closePanel').addEventListener('click',closeAllPanels);
 document.getElementById('panelBackdrop').addEventListener('click',closeAllPanels);
 document.getElementById('openConfig').addEventListener('click',()=>{
