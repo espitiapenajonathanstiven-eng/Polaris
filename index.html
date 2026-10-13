@@ -478,6 +478,13 @@
   .pc-stats div{flex:1; display:flex; flex-direction:column; gap:2px}
   .pc-stats b{font-family:'Source Serif 4',serif; font-size:1.5rem; color:color-mix(in srgb,var(--amb) 60%,var(--ink))}
   .pc-stats span{font-size:.66rem; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-soft)}
+  .profile-card{position:relative}
+  .pc-avatar{position:relative; width:80px; margin:0 auto 18px; cursor:pointer}
+  .pc-avatar .avatar-preview{margin:0}
+  .pc-edit{position:absolute; left:50%; bottom:-8px; transform:translateX(-50%); padding:3px 14px; border-radius:999px; background:var(--amb); color:#fff; border:2px solid var(--paper); font:inherit; font-size:.68rem; font-weight:600; letter-spacing:.04em; cursor:pointer}
+  .pc-pop{display:none; position:absolute; left:50%; top:118px; transform:translateX(-50%); z-index:5; width:190px; padding:8px; border-radius:16px; background:var(--paper); border:1px solid var(--line); box-shadow:0 12px 30px rgba(0,0,0,.45); flex-direction:column; gap:6px}
+  .pc-pop.show{display:flex}
+  .pc-pop .upload-btn-inline, .pc-pop button{display:flex; align-items:center; justify-content:center; box-sizing:border-box; margin:0; padding:10px 6px; border-radius:999px; border:1px solid var(--line); background:var(--card); color:var(--ink); font:inherit; font-size:.82rem; cursor:pointer}
   .menu-label{font-size:.7rem; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--ink-soft); margin:0 4px 8px}
   .menu-list{gap:8px; margin-bottom:16px}
   .menu-item{display:flex; align-items:center; gap:12px; padding:8px 12px; border-radius:16px; background:var(--card); border:1px solid var(--line); font-size:.95rem; font-weight:500}
@@ -716,18 +723,16 @@
 
 <div class="panel" id="panel" style="display:none">
   <div class="profile-card">
-    <div id="avatarPreview" class="avatar-preview"></div>
+    <div class="pc-avatar" id="avatarBtn" role="button" tabindex="0" aria-label="Foto de perfil">
+      <div id="avatarPreview" class="avatar-preview"></div>
+      <button class="pc-edit" id="avatarEdit" type="button">Editar</button>
+    </div>
+    <div class="pc-pop" id="avatarPop">
+      <label class="upload-btn-inline">Elegir foto<input type="file" id="avatarInput" accept="image/*"></label>
+      <button id="avatarRemove">Quitar foto</button>
+    </div>
     <div class="pc-name">Mi perfil</div>
     <div class="pc-sub">Tu rincón de lectura</div>
-    <div class="pc-btns">
-      <label class="upload-btn-inline">📷 Cambiar<input type="file" id="avatarInput" accept="image/*"></label>
-      <button id="avatarRemove">Quitar</button>
-    </div>
-    <div class="pc-stats">
-      <div><b id="stBooks">0</b><span>Libros</span></div>
-      <div><b id="stRead">0</b><span>Leídos</span></div>
-      <div><b id="stFav">0</b><span>Favoritos</span></div>
-    </div>
   </div>
 
   <div class="menu-label">Mi biblioteca</div>
@@ -2140,7 +2145,7 @@ async function updatePanelStats(){
   set('cnRead', live.filter(b=>b.read).length); set('cnTrash', all.length - live.length);
 }
 function openPanel(id){
-  if(id === 'panel') updatePanelStats();
+  if(id === 'panel'){ updatePanelStats(); document.getElementById('avatarPop').classList.remove('show'); }
   document.getElementById(id).style.display='block';
   document.getElementById('panelBackdrop').classList.add('show');
 }
@@ -2177,8 +2182,10 @@ function pickAvatar(file){
   };
   img.src = u;
 }
-document.getElementById('avatarInput').addEventListener('change', e=>{ pickAvatar(e.target.files[0]); e.target.value = ''; });
-document.getElementById('avatarRemove').addEventListener('click', ()=>{ try{ localStorage.removeItem('polaris-avatar'); }catch(e){} applyAvatar(); });
+document.getElementById('avatarInput').addEventListener('change', e=>{ pickAvatar(e.target.files[0]); e.target.value = ''; document.getElementById('avatarPop').classList.remove('show'); });
+document.getElementById('avatarBtn').addEventListener('click', ()=>document.getElementById('avatarPop').classList.toggle('show'));
+document.addEventListener('click', e=>{ if(!e.target.closest('#avatarBtn, #avatarPop')) document.getElementById('avatarPop').classList.remove('show'); });
+document.getElementById('avatarRemove').addEventListener('click', ()=>{ try{ localStorage.removeItem('polaris-avatar'); }catch(e){} applyAvatar(); document.getElementById('avatarPop').classList.remove('show'); });
 function setGreeting(){
   const hr = new Date().getHours();
   const slot = hr>=5 && hr<12 ? 0 : hr>=12 && hr<19 ? 1 : 2;
