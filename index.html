@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
 <meta name="theme-color" content="#081A24">
+<meta name="color-scheme" content="dark">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -211,7 +212,7 @@ body.sh #sheet{transform:none}
 <aside id="drawer" aria-label="Perfil"><button class="av big" id="dav" aria-label="Cambiar foto"></button><button class="chip" id="ed">Editar</button><h2 id="dn"></h2><div id="dedit"><input id="nm" maxlength="10" placeholder="Tu nombre"><p class="hint">Máximo 10 caracteres. Toca la foto para cambiarla.</p><button class="go" style="width:100%;margin:0" id="nmok">Guardar</button></div><nav id="dnav"></nav></aside>
 <input type="file" id="pf" accept="image/*" hidden>
 <input type="file" id="pcam" accept="image/*" capture="user" hidden>
-<input type="file" id="file" accept=".epub,.pdf,.doc,.docx" multiple hidden>
+<input type="file" id="file" multiple hidden>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/epub.js/0.3.93/epub.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -377,7 +378,7 @@ if(t.closest('#av'))return openDrawer();
 if(t.closest('#add1')||t.closest('#fab'))return addSheet();
 if(t.closest('#s1')){srch=true;render();var qi=$('#q');if(qi)qi.focus();return}
 if(t.closest('#sx')){srch=false;q='';return render()}
-if((x=t.closest('[data-fmt]'))){pend=x.dataset.fmt;var fi=$('#file');fi.accept=pend==='EPUB'?'.epub,application/epub+zip':pend==='PDF'?'.pdf,application/pdf':'.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document';closeSheet();return fi.click()}
+if((x=t.closest('[data-fmt]'))){pend=x.dataset.fmt;var fi=$('#file');fi.removeAttribute('accept');closeSheet();return fi.click()}
 if(t.id==='dshade')return back();
 if(t.closest('#ed')){$('#drawer').classList.toggle('ed');$('#nm').value=localStorage.getItem('pl-name')||'';return}
 if(t.closest('#dav')){if($('#drawer').classList.contains('ed'))$('#pf').click();return}
@@ -395,7 +396,7 @@ $('#rfile').addEventListener('change',function(){if(this.files[0])restore(this.f
 $('#file').addEventListener('change',function(){var fl=Array.prototype.slice.call(this.files);this.value='';add(fl).catch(function(){note('No se pudo añadir','Hubo un error al guardar el libro. Cierra la app del todo, ábrela otra vez e inténtalo de nuevo.')})});
 async function add(files){var ok=0;
 for(var i=0;i<files.length;i++){var f=files[i],ext=f.name.split('.').pop().toLowerCase();
-var type=ext==='epub'?'EPUB':ext==='pdf'?'PDF':ext==='docx'?'Word':null;if(!type||(pend&&type!==pend))continue;
+var ty=f.type||'',type=(ext==='epub'||ty==='application/epub+zip')?'EPUB':(ext==='pdf'||ty==='application/pdf')?'PDF':(ext==='docx'||/wordprocessingml/.test(ty))?'Word':null;if(!type||(pend&&type!==pend))continue;
 var buf=await f.arrayBuffer();
 var b={id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),type:type,title:f.name.replace(/\.[^.]+$/,''),author:'',cover:'',fav:0,read:0,p:0,cfi:'',t:Date.now()};
 if(type==='EPUB'&&typeof ePub!=='undefined'){try{var e=ePub(buf.slice(0)),m=await e.loaded.metadata;b.title=m.title||b.title;b.author=m.creator||'';var u=await e.coverUrl();if(u)b.cover=await toData(u);e.destroy()}catch(err){}}
