@@ -1,8 +1,6 @@
 {
   "name": "Polaris",
   "short_name": "Polaris",
-  "description": "Tu biblioteca para leer EPUB, PDF y Word",
-  "lang": "es",
   "id": "./",
   "start_url": "./",
   "scope": "./",
@@ -11,11 +9,8 @@
   "background_color": "#081A24",
   "theme_color": "#081A24",
   "icons": [
-    {
-      "src": "./icono.png",
-      "sizes": "192x192 512x512",
-      "type": "image/png",
-      "purpose": "any"
-    }
+    { "src": "./icono.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "./icono.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "./icono.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ]
 }
