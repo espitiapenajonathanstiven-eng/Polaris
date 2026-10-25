@@ -205,6 +205,8 @@ body.sh #sheet{transform:none}
 #sh2{background:#000;opacity:0;pointer-events:none}
 #bk2{transform:rotateY(180deg);background:linear-gradient(90deg,rgba(0,0,0,.2),rgba(0,0,0,.04)),var(--rbg);pointer-events:none}
 #shd{opacity:0;pointer-events:none}
+#cf{position:absolute;inset:0;pointer-events:none;display:none;z-index:4}
+.cfp{position:absolute;inset:0;background:var(--rbg)}
 .z{position:absolute;top:0;bottom:0;width:30%;z-index:5}
 #rb,#ub{overflow:hidden}
 .ep{position:relative;font:var(--fs,17px)/1.7 Georgia,serif;color:var(--rtx);text-align:justify;-webkit-hyphens:auto;hyphens:auto;overflow-wrap:break-word;will-change:transform}
@@ -236,7 +238,7 @@ body.sh #sheet{transform:none}
 <section class="scr" id="reader">
 <div class="top"><button class="bk" data-back aria-label="Salir del lector"></button></div>
 <div id="rd"><div class="z" id="zl" style="left:0"></div><div class="z" id="zr" style="right:0"></div><div class="pg" id="under"><div id="ub"></div><div id="shd"></div></div>
-<div class="pg" id="fl"><div id="rb"></div><div id="sh2"></div><div id="bk2"></div></div></div>
+<div class="pg" id="fl"><div id="rb"></div><div id="sh2"></div><div id="bk2"></div></div><div id="cf"><div class="cfp"></div></div></div>
 <div class="rf"><div class="bar"><i id="rbar" style="width:0"></i></div><span id="rp"></span></div>
 </section>
 <section class="scr" id="config"><div class="top"><button class="bk" data-back aria-label="Volver"></button><h1 class="mt">Configuración</h1></div><main id="cfg"></main></section>
@@ -556,14 +558,33 @@ if(!ok&&files.length)note('Formato incorrecto','Ese archivo no es '+(pend==='Wor
    Cada formato aporta un "driver" (drv): ready(d) prepara la capa de abajo, commit(d) deja la
    página nueva en la capa principal y jump(d) cambia de página sin animación. */
 var drv=null,busy=false,qd=0,sx=0,sy=0,st=0;
-function resetSheet(){var s=$('#fl');['#fl','#sh2','#shd'].forEach(function(q){$(q).getAnimations().forEach(function(a){a.cancel()})});s.style.transformOrigin=''}
-function flipAnim(d,fast){
-var s=$('#fl'),o={duration:fast?260:520,easing:'cubic-bezier(.42,0,.25,1)',fill:'forwards'},a=d>0?-180:180;
-s.style.transformOrigin=(d>0?'left':'right')+' center';
-$('#shd').style.background='linear-gradient(to '+(d>0?'right':'left')+',rgba(0,0,0,.45),rgba(0,0,0,0) 55%)';
-$('#shd').animate([{opacity:1},{opacity:0}],o);            /* sombra sobre la página de abajo */
-$('#sh2').animate([{opacity:0},{opacity:.4,offset:.5},{opacity:.4}],o); /* la hoja se oscurece al girar */
-return s.animate([{transform:'rotateY(0deg) skewY(0deg)'},{transform:'rotateY('+a/2+'deg) skewY('+(d>0?2:-2)+'deg)',offset:.5},{transform:'rotateY('+a+'deg) skewY(0deg)'}],o).finished}
+/* ===== Paso de página con curvatura: la hoja se despega de la esquina, se dobla y deja ver su reverso ===== */
+var dg=null;
+function cpClip(poly,a,b,c){var out=[],n=poly.length;for(var i=0;i<n;i++){var p=poly[i],q=poly[(i+1)%n],dp=a*p[0]+b*p[1]+c,dq=a*q[0]+b*q[1]+c;if(dp>=0)out.push(p);if((dp>=0)!==(dq>=0)){var t=dp/(dp-dq);out.push([p[0]+(q[0]-p[0])*t,p[1]+(q[1]-p[1])*t])}}return out}
+function cpStr(poly,W,mir){if(poly.length<3)return 'polygon(0 0,0 0,0 0)';return 'polygon('+poly.map(function(p){return(mir?W-p[0]:p[0]).toFixed(1)+'px '+p[1].toFixed(1)+'px'}).join(',')+')'}
+function cpMat(ax,ay,cx,cy,ex,ey,W,mir){return mir?'matrix('+(-ax)+','+ay+','+(-cx)+','+cy+','+(W-ex)+','+ey+')':'matrix('+ax+','+ay+','+cx+','+cy+','+ex+','+ey+')'}
+function cpGrad(dx,dy,Mx,My,W,H,st){var th=Math.atan2(dx,-dy),len=Math.abs(W*Math.sin(th))+Math.abs(H*Math.cos(th)),t0=len/2+((Mx-W/2)*dx+(My-H/2)*dy);return 'linear-gradient('+(th*180/Math.PI).toFixed(2)+'deg,'+st.map(function(q){return q[0]+' '+(t0+q[1]).toFixed(1)+'px'}).join(',')+')'}
+function curlFrame(Px,Py,d){
+var rd=$('#rd'),W=rd.clientWidth,H=rd.clientHeight,mir=d<0,fl=$('#fl'),cf=$('#cf'),sh=$('#shd');
+var dx=W-Px,dy=H-Py,len=Math.sqrt(dx*dx+dy*dy);
+if(len<1){curlClear();return}
+var nx=dx/len,ny=dy/len,Mx=(W+Px)/2,My=(H+Py)/2,k=nx*Mx+ny*My,rect=[[0,0],[W,0],[W,H],[0,H]];
+var flat=cpClip(rect,-nx,-ny,k),folded=cpClip(rect,nx,ny,-k);
+var refl=folded.map(function(p){var s=nx*p[0]+ny*p[1]-k;return[p[0]-2*s*nx,p[1]-2*s*ny]});
+refl=cpClip(cpClip(cpClip(cpClip(refl,1,0,0),-1,0,W),0,1,0),0,-1,H);
+fl.style.clipPath=fl.style.webkitClipPath=cpStr(flat,W,mir);
+/* reverso de la hoja */
+cf.style.display='block';cf.style.filter='drop-shadow('+(mir?4:-4)+'px 2px 6px rgba(0,0,0,.38))';
+var fp=cf.firstChild;fp.style.clipPath=fp.style.webkitClipPath=cpStr(refl,W,mir);
+var gx=mir?nx:-nx,gy=-ny,mx2=mir?W-Mx:Mx;
+fp.style.background=cpGrad(gx,gy,mx2,My,W,H,[['rgba(0,0,0,.38)',0],['rgba(255,255,255,.24)',14],['rgba(0,0,0,.05)',55],['rgba(0,0,0,.15)',170]])+',var(--rbg)';
+/* sombra sobre la página que queda al descubierto */
+sh.style.opacity=Math.min(1,len/70);sh.style.clipPath=sh.style.webkitClipPath=cpStr(folded,W,mir);
+sh.style.background=cpGrad(mir?-nx:nx,ny,mx2,My,W,H,[['rgba(0,0,0,.45)',0],['rgba(0,0,0,.18)',22],['rgba(0,0,0,0)',90]])}
+function curlClear(){var fl=$('#fl'),cf=$('#cf'),sh=$('#shd');fl.style.clipPath=fl.style.webkitClipPath='';cf.style.display='none';sh.style.opacity='';sh.style.background='';sh.style.clipPath=sh.style.webkitClipPath='';sh.innerHTML=''}
+function resetSheet(){['#fl','#sh2','#shd'].forEach(function(q){$(q).getAnimations().forEach(function(a){a.cancel()})});curlClear()}
+function curlAnim(d,from,to,dur,arc){return new Promise(function(ok){var t0=performance.now();function step(now){var t=Math.min(1,(now-t0)/dur),e=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;curlFrame(from[0]+(to[0]-from[0])*e,from[1]+(to[1]-from[1])*e-arc*Math.sin(Math.PI*e),d);if(t<1)requestAnimationFrame(step);else ok()}requestAnimationFrame(step)})}
+function flipAnim(d,fast){var rd=$('#rd'),W=rd.clientWidth,H=rd.clientHeight;return curlAnim(d,[W,H],[-W*1.02,H],fast?260:620,H*.22)}
 async function go(d){
 if(!drv)return;
 if(!P2.flip||matchMedia('(prefers-reduced-motion: reduce)').matches)return drv.jump(d);
@@ -574,8 +595,21 @@ if(ok===null)await drv.jump(d);else{await flipAnim(d,qd!==0);await drv.commit(d)
 catch(e){try{await drv.jump(d)}catch(x){}}
 resetSheet();busy=false;if(drv&&drv.after)drv.after();
 if(qd){var n=qd>0?1:-1;qd-=n;go(n)}}
-function tstart(t){sx=t.screenX;sy=t.screenY;st=Date.now()}
-function tend(t){var dx=t.screenX-sx,dy=t.screenY-sy;if(Date.now()-st<700&&Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.5)go(dx<0?1:-1)}
+function tstart(t){sx=t.clientX;sy=t.clientY;st=Date.now();dg=null}
+function dragPos(x,y,d){var rd=$('#rd'),W=rd.clientWidth,H=rd.clientHeight,m=d>0?x-sx:sx-x;return[W+Math.min(0,m)*1.6,H+Math.max(-H*.5,Math.min(10,(y-sy)*.9))]}
+function tmove(t){
+var dx=t.clientX-sx,dy=t.clientY-sy;
+if(!dg){if(busy||!drv||!P2.flip||matchMedia('(prefers-reduced-motion: reduce)').matches||$('#zl').style.display==='none')return;
+if(Math.abs(dx)>14&&Math.abs(dx)>Math.abs(dy)*1.3){var g={d:dx<0?1:-1,ok:undefined};dg=g;busy=true;g.p=(async function(){try{g.ok=await drv.ready(g.d)}catch(e){g.ok=false}})()}}
+if(dg&&dg.ok===true){var p=dragPos(t.clientX,t.clientY,dg.d);curlFrame(p[0],p[1],dg.d)}}
+async function tend(t){
+if(dg){var g=dg;dg=null;await g.p;var d=g.d,rd=$('#rd'),W=rd.clientWidth,H=rd.clientHeight;
+if(g.ok!==true){if(g.ok===null){try{await drv.jump(d)}catch(e){}}busy=false;resetSheet();if(drv&&drv.after)drv.after();return}
+var m=Math.abs(t.clientX-sx),fast=Date.now()-st<260&&m>40,done=m>W*.22||fast,p=dragPos(t.clientX,t.clientY,d);
+try{if(done){await curlAnim(d,p,[-W*1.02,H],fast?160:260,0);await drv.commit(d)}else await curlAnim(d,p,[W,H],200,0)}catch(e){try{await drv.jump(d)}catch(x){}}
+resetSheet();busy=false;if(done&&drv&&drv.after)drv.after();return}
+var dx=t.clientX-sx,dy=t.clientY-sy;if(Date.now()-st<700&&Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.5)go(dx<0?1:-1)}
+function tcancel(){if(dg){var g=dg;dg=null;g.p.then(async function(){if(g.ok===true){var rd=$('#rd');await curlAnim(g.d,[rd.clientWidth*.8,rd.clientHeight],[rd.clientWidth,rd.clientHeight],160,0)}resetSheet();busy=false})}}
 /* EPUB: una segunda "rendition" (B) vive en #ub mostrando la página vecina */
 async function readBook(b){
 if(!b)return;cur=b;push('#reader');var hh=new Date().getHours();$('#reader').classList.toggle('dim',P2.auto&&(hh>=20||hh<7));applyRead();
@@ -617,7 +651,9 @@ function showDetailQuiet(){}
 $('#zl').onclick=function(){go(-1)};
 $('#zr').onclick=function(){go(1)};
 $('#rd').addEventListener('touchstart',function(e){tstart(e.changedTouches[0])},{passive:true});
+$('#rd').addEventListener('touchmove',function(e){tmove(e.changedTouches[0])},{passive:true});
 $('#rd').addEventListener('touchend',function(e){tend(e.changedTouches[0])},{passive:true});
+$('#rd').addEventListener('touchcancel',tcancel,{passive:true});
 $('[data-back]').innerHTML=ic('back');
 document.querySelectorAll('[data-back]').forEach(function(b){b.innerHTML=ic('back')});
 applyTheme();applyRead();matchMedia('(prefers-color-scheme: light)').addEventListener('change',function(){if(theme==='auto')applyTheme()});
