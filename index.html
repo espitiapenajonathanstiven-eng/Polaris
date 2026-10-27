@@ -72,7 +72,7 @@ p{margin:0}
 .row .cv2{color:var(--t2);display:flex}
 .pdfw{display:flex;align-items:center;justify-content:center;width:100%;height:100%}
 .pdfw canvas{box-shadow:0 2px 14px rgba(43,38,32,.25);background:#fff}
-.doc{height:100%;overflow-y:auto;overscroll-behavior:contain;padding:4px 6px 28px;font:var(--fs,17px)/1.75 Georgia,serif;color:var(--rtx);-webkit-user-select:text;user-select:text}
+.doc{height:100%;overflow-y:auto;overscroll-behavior:contain;padding:36px 22px 44px;font:var(--fs,17px)/1.75 Georgia,serif;color:var(--rtx);-webkit-user-select:text;user-select:text}
 .doc img{max-width:100%;height:auto}
 .doc table{border-collapse:collapse;max-width:100%}
 .doc td,.doc th{border:1px solid var(--rl);padding:6px}
@@ -154,6 +154,13 @@ main{flex:1;overflow-y:auto;overscroll-behavior:contain;padding:0 16px 24px}
 .go{background:var(--ac);color:var(--on);font-weight:600;font-size:14px;padding:10px;border-radius:12px;text-align:center;margin-top:10px}
 .bar{height:5px;border-radius:3px;background:var(--s2);overflow:hidden;margin-top:6px}
 .bar i{display:block;height:100%;background:var(--ac);border-radius:3px}
+.ptabs{display:flex;border-bottom:1px solid var(--s2);margin-bottom:16px}
+.ptabs button{flex:1;padding:11px 0;font-size:14px;color:var(--mut);border-bottom:2px solid transparent;margin-bottom:-1px;transition:color .2s,border-color .2s}
+.ptabs button.on{color:var(--ac);border-bottom-color:var(--ac);font-weight:600}
+.pgr{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;overscroll-behavior-x:contain}
+.pgr::-webkit-scrollbar{display:none}
+.pgp{flex:0 0 100%;min-width:0;scroll-snap-align:start;scroll-snap-stop:always;padding:0 2px;box-sizing:border-box}
+.pe{text-align:center;color:var(--mut);padding:48px 16px;font-size:14px}
 .chips{display:flex;gap:8px;margin-bottom:14px;overflow-x:auto}
 .chip{font-size:13px;padding:8px 14px;border-radius:16px;background:var(--s1);color:var(--t2);flex-shrink:0}
 .chip.on{background:var(--ac);color:var(--on);font-weight:600}
@@ -196,7 +203,12 @@ body.sh #sheet{transform:none}
 #sheet input{width:100%;font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--s2);border-radius:12px;padding:12px;-webkit-user-select:text;user-select:text;margin:4px 0 12px}
 #reader{background:var(--rbg);color:var(--rtx)}
 #reader .bk{color:var(--rtx)}
-#rd{flex:1;position:relative;margin:0 14px;overflow:hidden;perspective:1600px;perspective-origin:30% 50%}
+#reader{padding-top:0}
+#rd{position:absolute;inset:0;margin:0;overflow:hidden;perspective:1600px;perspective-origin:30% 50%}
+#reader .top,#reader .rf{position:absolute;left:0;right:0;z-index:6;background:var(--rbg);opacity:0;pointer-events:none;transition:opacity .22s}
+#reader .top{top:var(--sat)}
+#reader .rf{bottom:0}
+#reader.ui .top,#reader.ui .rf{opacity:1;pointer-events:auto}
 .pg{position:absolute;inset:0;background:var(--rbg)}
 #fl{transform-style:preserve-3d;background:none}
 #rb{background:var(--rbg)}
@@ -355,10 +367,10 @@ function render(){
 if(!pedit)draftPh=undefined; /* la foto nueva es un borrador hasta pulsar Guardar */
 var T={lib:'Biblioteca',fav:'Favoritos',read:'Leídos'},h='';
 var ph=localStorage.getItem('pl-photo')||'./icono.png';
-var L=tab==='lib'&&screen==='lib',F=tab==='fav',R=tab==='read',LS=L||F||R,key=[L,F,R,srch,ph.length].join('|');
+var L=false,F=tab==='fav',R=tab==='read',LS=L||F||R,key=[L,F,R,srch,ph.length].join('|');
 if(key!==topKey){topKey=key;$('#top').innerHTML=LS?(srch?'<input class="srch" id="q" placeholder="Buscar en tu biblioteca" value="'+esc(q)+'"><button class="sb" id="sx" aria-label="Cerrar búsqueda">'+ic('x',22)+'</button>':'<h1 class="mt">'+(F?'Favoritos':R?'Leídos':'Mi Biblioteca')+'</h1><button class="sb" id="s1" aria-label="Buscar">'+ic('search',24)+'</button>'):'<button class="av" id="av" aria-label="Abrir perfil"><img src="'+ph+'" alt=""></button><div class="logo">Polaris<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.4 7.6L22 12l-7.6 2.4L12 22l-2.4-7.6L2 12l7.6-2.4z"/></svg></div>'}
 $('#dav').innerHTML='<img src="'+ph+'" alt="">';
-$('#top').style.display=tab==='perfil'?'none':'';$('#fab').style.display='none';$('#fab').innerHTML=ic('plus',28);$('#body').style.paddingBottom=LS?'110px':'';
+$('#top').style.display=tab==='perfil'?'none':'';$('#fab').style.display='none';$('#fab').innerHTML=ic('plus',28);$('#body').style.paddingBottom='110px';
 $('#dn').textContent=localStorage.getItem('pl-name')||'Mi perfil';
 $('#dnav').innerHTML=[['lib','books','Biblioteca'],['fav','heart','Favoritos'],['read','check','Leídos']].map(function(t){return '<button data-t="'+t[0]+'"'+(t[0]===tab?' class="on"':'')+'>'+ic(t[1])+t[2]+'</button>'}).join('');
 if(LS){h=libHTML()}else if(tab==='perfil'){h=perfilHTML()}else{
@@ -366,17 +378,21 @@ if(tab==='lib')h+=greet();
 else h+='<h1 class="hi">'+T[tab]+'</h1>';
 var last=books.filter(function(b){return !b.read&&b.p>0}).sort(function(a,b){return b.t-a.t})[0];
 if(tab==='lib'&&last&&loaded)h+='<button class="hero" data-open="'+last.id+'"><div class="cv">'+cov(last)+'</div><div class="in"><div><div class="k">Continúa leyendo</div><div class="ttl">'+esc(last.title)+'</div><div class="sub">'+esc(last.author||last.type)+'</div></div><div><div class="bar"><i style="width:'+Math.round(last.p*100)+'%"></i></div><div class="go">Seguir leyendo</div></div></div></button>';
-if(books.length)h+='<div class="chips">'+['all','EPUB','PDF','Word'].map(function(f){return '<button class="chip'+(filt===f?' on':'')+'" data-f="'+f+'">'+(f==='all'?'Todos':f)+'</button>'}).join('')+'</div>';
-var l=shown();
+var l=books.filter(function(b){return !b.read});
 if(!loaded)h+='<div class="grid"><div class="sk"></div><div class="sk"></div><div class="sk"></div><div class="sk"></div></div>';
 else if(!l.length)h+='<div class="empty">'+ic('book',96)+'<h3>Aún no hay nada aquí</h3><p>'+(tab==='lib'?'Añade tu primer libro y comienza tu próxima aventura.':tab==='fav'?'Mantén pulsado un libro para marcarlo como favorito':'Los libros que termines aparecerán aquí')+'</p></div>';
-else h+='<div class="grid v-'+view+'">'+l.slice().sort(sorter).map(card).join('')+'</div>';
+else{var ls=l.slice().sort(sorter),ord=sortedOrder(ls);if(ord.indexOf(filt)<0)filt=ord[0];
+h+='<div class="ptabs">'+ord.map(function(f){var n=ls.filter(function(b){return b.type===f}).length;return '<button'+(filt===f?' class="on"':'')+' data-pg="'+f+'">'+f+(P2.cnt?' '+n:'')+'</button>'}).join('')+'</div>';
+h+='<div class="pgr" id="pgr">'+ord.map(function(f){var g=ls.filter(function(b){return b.type===f});return '<div class="pgp">'+(g.length?'<div class="grid v-'+view+'">'+g.map(card).join('')+'</div>':'<p class="pe">Aún no hay libros '+f+'.</p>')+'</div>'}).join('')+'</div>'}
 }
 $('#body').innerHTML=h;
+var pgr=$('#pgr');if(pgr){var tys=Array.prototype.map.call(document.querySelectorAll('.ptabs button'),function(b){return b.dataset.pg}),pgT=0;pgr.scrollLeft=Math.max(0,tys.indexOf(filt))*pgr.clientWidth;
+pgr.onscroll=function(){clearTimeout(pgT);pgT=setTimeout(function(){var f=tys[Math.round(pgr.scrollLeft/pgr.clientWidth)];if(f&&f!==filt){filt=f;pgMark()}},90)}}
 var tb=[['lib','books','Biblioteca'],['add','plus',''],['fav','heart','Favoritos']];
 $('#tabs').innerHTML=tb.map(function(t){if(t[0]==='add')return '<button class="plus" data-t="add" aria-label="Añadir libro">'+ic('plus',28)+'</button>';return '<button data-t="'+t[0]+'"'+(t[0]===tab?' class="on"':'')+'>'+ic(t[1],24)+t[2]+'</button>'}).join('');
 var add=$('#add2');if(add)add.onclick=function(){$('#file').click()}
 }
+function pgMark(){Array.prototype.forEach.call(document.querySelectorAll('.ptabs button'),function(b){b.classList.toggle('on',b.dataset.pg===filt)})}
 function push(id){$(id).classList.add('on');history.pushState({s:id},'')}
 function closeTop(){if(document.body.classList.contains('dr')){document.body.classList.remove('dr');return}if($('#reader').classList.contains('on')){$('#reader').classList.remove('on');endReader();render()}else if($('#config').classList.contains('on')){$('#config').classList.remove('on')}else if($('#detail').classList.contains('on')){$('#detail').classList.remove('on');render()}else if(document.body.classList.contains('sh'))closeSheet()}
 window.addEventListener('popstate',closeTop);
@@ -411,8 +427,9 @@ document.addEventListener('click',function(e){
 var t=e.target,x;
 if(long){long=false;return}
 if(t.closest('[data-back]'))return back();
+if((x=t.closest('[data-pg]'))){filt=x.dataset.pg;pgMark();var pg=$('#pgr');if(pg){var i=Array.prototype.map.call(document.querySelectorAll('.ptabs button'),function(b){return b.dataset.pg}).indexOf(filt);pg.scrollTo({left:i*pg.clientWidth,behavior:'smooth'})}return}
 if((x=t.closest('[data-f]'))){filt=x.dataset.f;return render()}
-if((x=t.closest('[data-t]'))){var k=x.dataset.t;if(k==='add')return addSheet();if(k==='menu')return openDrawer();var was=tab;tab=k;if(k==='lib'&&was==='lib')screen=screen==='lib'?'home':'lib';srch=false;q='';pedit=false;if(document.body.classList.contains('dr'))back();return render()}
+if((x=t.closest('[data-t]'))){var k=x.dataset.t;if(k==='add')return addSheet();if(k==='menu')return openDrawer();tab=k;screen='home';srch=false;q='';pedit=false;if(document.body.classList.contains('dr'))back();return render()}
 if(t.closest('#rcf'))return openConfig();
 if((x=t.closest('[data-pk]'))){setVal(x.dataset.pk,x.dataset.val);closeSheet();return renderConfig()}
 if((x=t.closest('[data-cf]')))return cfg(x.dataset.cf);
@@ -487,8 +504,8 @@ var E=this.E,c=this.col;
 if(this.ci!==ci){var node=await epChapter(E,ci);c.innerHTML='';c.appendChild(node.cloneNode(true));this.ci=ci;
 var im=Array.prototype.slice.call(c.querySelectorAll('img'));
 await Promise.all(im.map(function(i){return i.complete?0:new Promise(function(r){i.onload=i.onerror=r;setTimeout(r,1500)})}))}
-var W=this.el.clientWidth,H=this.el.clientHeight-12,G=40;
-c.style.width=W+'px';c.style.height=H+'px';c.style.marginTop='6px';c.style.columnWidth=W+'px';c.style.webkitColumnWidth=W+'px';c.style.columnGap=G+'px';c.style.setProperty('--eph',(H-8)+'px');
+var PX=22,PT=32,PB=30,G=60,W=this.el.clientWidth-2*PX,H=this.el.clientHeight-PT-PB;
+c.style.width=W+'px';c.style.height=H+'px';c.style.marginTop=PT+'px';c.style.marginLeft=PX+'px';c.style.columnWidth=W+'px';c.style.webkitColumnWidth=W+'px';c.style.columnGap=G+'px';c.style.setProperty('--eph',(H-8)+'px');
 var n=Math.max(1,Math.round((c.scrollWidth+G)/(W+G)));this.n=n;
 if(frac!=null)pi=Math.floor(frac*n);
 if(pi<0||pi>n-1)pi=n-1;
@@ -550,7 +567,7 @@ var ty=f.type||'',type=(ext==='epub'||ty==='application/epub+zip')?'EPUB':(ext==
 var buf=await f.arrayBuffer();
 var b={id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),type:type,title:f.name.replace(/\.[^.]+$/,''),author:'',cover:'',fav:0,read:0,p:0,cfi:'',t:Date.now()};
 try{if(type==='EPUB'){var E0=await openEpub(buf);b.title=E0.title||b.title;b.author=E0.author||'';try{b.cover=await epCover(E0)}catch(x){}}else if(type==='PDF'){b.cover=await coverOf('PDF',buf)}}catch(err){}
-await tx('files','readwrite',function(s){return s.put(buf,b.id)});await save(b);books.unshift(b);ok++;filt='all';tab='lib';screen='lib';render()}
+await tx('files','readwrite',function(s){return s.put(buf,b.id)});await save(b);books.unshift(b);ok++;filt=type;tab='lib';screen='home';render()}
 if(!ok&&files.length)note('Formato incorrecto','Ese archivo no es '+(pend==='Word'?'un Word (.docx)':'un '+pend)+'. Elige uno del formato que seleccionaste.')
 }
 /* ===== Paso de página: la hoja gira sobre su lomo en 3D =====
@@ -586,7 +603,7 @@ function resetSheet(){['#fl','#sh2','#shd'].forEach(function(q){$(q).getAnimatio
 function curlAnim(d,from,to,dur,arc){return new Promise(function(ok){var t0=performance.now();function step(now){var t=Math.min(1,(now-t0)/dur),e=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;curlFrame(from[0]+(to[0]-from[0])*e,from[1]+(to[1]-from[1])*e-arc*Math.sin(Math.PI*e),d);if(t<1)requestAnimationFrame(step);else ok()}requestAnimationFrame(step)})}
 function flipAnim(d,fast){var rd=$('#rd'),W=rd.clientWidth,H=rd.clientHeight;return curlAnim(d,[W,H],[-W*1.02,H],fast?260:620,H*.22)}
 async function go(d){
-if(!drv)return;
+if(!drv)return;$('#reader').classList.remove('ui');
 if(!P2.flip||matchMedia('(prefers-reduced-motion: reduce)').matches)return drv.jump(d);
 if(busy){qd+=d;return}  /* si pasas rápido, las páginas se encolan y giran más deprisa */
 busy=true;
@@ -613,7 +630,7 @@ function tcancel(){if(dg){var g=dg;dg=null;g.p.then(async function(){if(g.ok===t
 /* EPUB: una segunda "rendition" (B) vive en #ub mostrando la página vecina */
 async function readBook(b){
 if(!b)return;cur=b;push('#reader');var hh=new Date().getHours();$('#reader').classList.toggle('dim',P2.auto&&(hh>=20||hh<7));applyRead();
-var box=$('#rb');box.innerHTML='';$('#ub').innerHTML='';drv=null;busy=false;qd=0;resetSheet();$('#rp').textContent=Math.round(b.p*100)+' %';$('#rbar').style.width=b.p*100+'%';
+$('#reader').classList.remove('ui');var box=$('#rb');box.innerHTML='';$('#ub').innerHTML='';drv=null;busy=false;qd=0;resetSheet();$('#rp').textContent=Math.round(b.p*100)+' %';$('#rbar').style.width=b.p*100+'%';
 var wz=b.type==='Word'?'none':'';$('#zl').style.display=wz;$('#zr').style.display=wz;
 if(b.type==='PDF')return readPdf(b,box);if(b.type==='Word')return readWord(b,box);
 if(b.type!=='EPUB'){box.innerHTML='<p class="msg">Formato no compatible.</p>';return}
@@ -654,6 +671,7 @@ $('#rd').addEventListener('touchstart',function(e){tstart(e.changedTouches[0])},
 $('#rd').addEventListener('touchmove',function(e){tmove(e.changedTouches[0])},{passive:true});
 $('#rd').addEventListener('touchend',function(e){tend(e.changedTouches[0])},{passive:true});
 $('#rd').addEventListener('touchcancel',tcancel,{passive:true});
+var uiT=0;$('#rd').addEventListener('click',function(e){if(e.target.classList.contains('z'))return;var r=$('#reader');r.classList.toggle('ui');clearTimeout(uiT);if(r.classList.contains('ui'))uiT=setTimeout(function(){r.classList.remove('ui')},4000)});
 $('[data-back]').innerHTML=ic('back');
 document.querySelectorAll('[data-back]').forEach(function(b){b.innerHTML=ic('back')});
 applyTheme();applyRead();matchMedia('(prefers-color-scheme: light)').addEventListener('change',function(){if(theme==='auto')applyTheme()});
