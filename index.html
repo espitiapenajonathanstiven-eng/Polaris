@@ -351,6 +351,21 @@ body.sh #sheet{transform:none}
 .auv{width:60px;height:60px;border-radius:50%;margin:0 auto;overflow:hidden;background:var(--s1);border:2px solid var(--ac);display:flex;align-items:center;justify-content:center;color:var(--ac);font-weight:600;font-size:20px}
 .auv img{width:100%;height:100%;object-fit:cover;display:block}
 .aun{font-size:11px;line-height:1.25;color:var(--t2);margin-top:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.inf{padding:0 8px 24px;text-align:left}
+.ih{font-size:15px;font-weight:600;margin:22px 0 10px;color:var(--tx)}
+.ig{background:var(--s1);border-radius:14px;padding:4px 14px}
+.ir{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--s2);font-size:14px}
+.ir:last-child{border-bottom:0}
+.ir span{color:var(--t2)}
+.ir b{font-weight:600;text-align:right}
+.isyn{font-size:14px;line-height:1.55;color:var(--t2);margin:0}
+.isyn.cl{display:-webkit-box;-webkit-line-clamp:5;-webkit-box-orient:vertical;overflow:hidden}
+.imore{display:none;font-size:12px;color:var(--ac);margin-top:6px}
+.isyn.cl+.imore{display:block}
+.ab{display:flex;gap:14px;align-items:flex-start}
+.ab .auv{width:64px;height:64px;flex-shrink:0;margin:0}
+.ab .wt{margin-bottom:4px}
+.isyn2{font-size:13px;line-height:1.5;color:var(--t2);margin:0}
 </style>
 </head>
 <body>
@@ -427,16 +442,40 @@ function auNames(){var src=books.filter(function(b){return !b.read&&b.p>0});if(!
 function auIni(n){var p=n.split(' ').filter(Boolean);return esc((p[0][0]+(p.length>1?p[p.length-1][0]:'')).toUpperCase())}
 function auSet(n,v){document.querySelectorAll('.aui').forEach(function(e){if(e.dataset.au===n)e.querySelector('.auv').innerHTML='<img src="'+v+'" alt="">'})}
 function auNorm(x){return String(x).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}
-function auFetch(n){if(auBusy[n]||!navigator.onLine)return;auBusy[n]=1;var T=['es','en'],toks=auNorm(n).split(/[\s.]+/).filter(function(x){return x.length>1}),W=/escritor|autor|novelist|poet|periodist|dramaturg|ensayist|guionist|writer|author|journalist|playwright|essayist|screenwriter|fil[o\u00f3]sof|philosopher|historiad|historian|cient[i\u00ed]fic|scientist|ilustrador|illustrator|youtuber|divulgad/i;
-function fail(){try{localStorage.setItem('pl-au:'+n,'0:'+Date.now())}catch(e){}auBusy[n]=0}
-function img(src,i){return fetch(src).then(function(r){return r.blob()}).then(function(bl){var im=new Image(),u=URL.createObjectURL(bl);im.onload=function(){try{var c=document.createElement('canvas'),S=112,w=im.naturalWidth,h=im.naturalHeight,m=Math.min(w,h);c.width=c.height=S;c.getContext('2d').drawImage(im,(w-m)/2,(h-m)*.15,m,m,0,0,S,S);var d=c.toDataURL('image/jpeg',.82);localStorage.setItem('pl-au:'+n,d);auSet(n,d);auBusy[n]=0}catch(e){t(i+1)}URL.revokeObjectURL(u)};im.onerror=function(){URL.revokeObjectURL(u);t(i+1)};im.src=u})}
+function auFetch(n,only){if(auBusy[n]||!navigator.onLine)return;auBusy[n]=1;var T=['es','en'],toks=auNorm(n).split(/[\s.]+/).filter(function(x){return x.length>1}),W=/escritor|autor|novelist|poet|periodist|dramaturg|ensayist|guionist|writer|author|journalist|playwright|essayist|screenwriter|fil[o\u00f3]sof|philosopher|historiad|historian|cient[i\u00ed]fic|scientist|ilustrador|illustrator|youtuber|divulgad/i;
+function fail(){try{localStorage.setItem(only?'pl-ab:'+n:'pl-au:'+n,only?'-':'0:'+Date.now())}catch(e){}auBusy[n]=0;dRefresh()}
+function img(src,i){return fetch(src).then(function(r){return r.blob()}).then(function(bl){var im=new Image(),u=URL.createObjectURL(bl);im.onload=function(){try{var c=document.createElement('canvas'),S=112,w=im.naturalWidth,h=im.naturalHeight,m=Math.min(w,h);c.width=c.height=S;c.getContext('2d').drawImage(im,(w-m)/2,(h-m)*.15,m,m,0,0,S,S);var d=c.toDataURL('image/jpeg',.82);localStorage.setItem('pl-au:'+n,d);auSet(n,d);auBusy[n]=0;dRefresh()}catch(e){t(i+1)}URL.revokeObjectURL(u)};im.onerror=function(){URL.revokeObjectURL(u);t(i+1)};im.src=u})}
 function t(i){if(i>=T.length)return fail();
-fetch('https://'+T[i]+'.wikipedia.org/w/api.php?action=query&format=json&origin=*&redirects=1&generator=search&gsrlimit=6&gsrsearch='+encodeURIComponent(n)+'&prop=pageimages%7Cdescription&piprop=thumbnail&pithumbsize=240').then(function(r){return r.ok?r.json():null}).then(function(j){
+fetch('https://'+T[i]+'.wikipedia.org/w/api.php?action=query&format=json&origin=*&redirects=1&generator=search&gsrlimit=6&gsrsearch='+encodeURIComponent(n)+'&prop=pageimages%7Cdescription%7Cextracts&piprop=thumbnail&pithumbsize=240&exintro=1&explaintext=1&exsentences=3&exlimit=max').then(function(r){return r.ok?r.json():null}).then(function(j){
 var ps=j&&j.query&&j.query.pages?Object.keys(j.query.pages).map(function(k){return j.query.pages[k]}):[];
 ps=ps.filter(function(p){var tt=auNorm(p.title||'');return p.thumbnail&&p.thumbnail.source&&W.test(p.description||'')&&toks.every(function(x){return tt.indexOf(x)>-1})}).sort(function(a,b){return (a.index||9)-(b.index||9)});
-if(!ps.length)return t(i+1);return img(ps[0].thumbnail.source,i)}).catch(function(){auBusy[n]=0})}
+if(!ps.length)return t(i+1);if(ps[0].extract){try{localStorage.setItem('pl-ab:'+n,ps[0].extract.slice(0,420))}catch(e){}}if(only){auBusy[n]=0;dRefresh();return}return img(ps[0].thumbnail.source,i)}).catch(function(){auBusy[n]=0})}
 t(0)}
 function auHTML(){var a=auNames();if(!a.length)return '';return '<div class="aus"><div class="wt aut">Autores que lees</div><div class="aur">'+a.map(function(n){var c=null;try{c=localStorage.getItem('pl-au:'+n)}catch(e){}var ok=c&&c.indexOf('data:')===0;if(!ok&&(c===null||c==='0'||(c.indexOf('0:')===0&&Date.now()-(+c.slice(2))>216e5)))auFetch(n);return '<div class="aui" data-au="'+esc(n)+'"><div class="auv">'+(ok?'<img src="'+c+'" alt="">':auIni(n))+'</div><div class="aun">'+esc(n)+'</div></div>'}).join('')+'</div></div>'}
+var bkBusy={};
+function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+function auSplit(str){var o=[];String(str||'').replace(/\([^)]*\)/g,' ').split(/\s*(?:;|&|\sy\s|\sand\s|\se\s)\s*/i).forEach(function(p){var q=p.split(',').map(function(x){return x.trim()}).filter(Boolean);if(q.length===2&&q[0].split(' ').length<=2&&q[1].split(' ').length<=2)q=[q[1]+' '+q[0]];q.forEach(function(n){n=n.replace(/\s+/g,' ').trim();if(n.length>2&&n.length<61&&!/^(desconocid|an[o\u00f3]nim|sin autor|unknown)/i.test(n))o.push(n)})});return o}
+function dRefresh(){if(cur&&$('#dsyn'))dFill(cur)}
+function bkFetch(b){if(bkBusy[b.id]||!navigator.onLine)return;bkBusy[b.id]=1;var au=auSplit(b.author)[0]||'',q='intitle:'+b.title+(au?' inauthor:'+au:''),nt=auNorm(b.title);
+fetch('https://www.googleapis.com/books/v1/volumes?maxResults=6&printType=books&q='+encodeURIComponent(q)).then(function(r){return r.ok?r.json():null}).then(function(j){
+var it=((j&&j.items)||[]).map(function(x){return x.volumeInfo||{}}).filter(function(v){var t=auNorm(v.title||'');return t&&(t.indexOf(nt)>-1||nt.indexOf(t)>-1)});
+var v=it.filter(function(x){return x.description})[0]||it[0];
+if(!v)lsSet('pl-bk:'+b.id,'x:'+Date.now());else{var tx=(new DOMParser().parseFromString(v.description||'','text/html').body.textContent||'').replace(/\s+/g,' ').trim().slice(0,900);lsSet('pl-bk:'+b.id,JSON.stringify({s:tx,pc:v.pageCount||0,pu:v.publisher||'',y:(v.publishedDate||'').slice(0,4),g:(v.categories&&v.categories[0])||''}))}
+bkBusy[b.id]=0;dRefresh()}).catch(function(){bkBusy[b.id]=0})}
+function dLoad(b){var c=lsGet('pl-bk:'+b.id);if(!c||(c.indexOf('x:')===0&&Date.now()-(+c.slice(2))>216e5))bkFetch(b);
+var au=auSplit(b.author)[0];if(au){var ph=lsGet('pl-au:'+au),bio=lsGet('pl-ab:'+au),ok=ph&&ph.indexOf('data:')===0;if(!ok&&(ph===null||ph==='0'||(ph.indexOf('0:')===0&&Date.now()-(+ph.slice(2))>216e5)))auFetch(au);else if(ok&&bio===null)auFetch(au,1)}}
+function detInfo(b){var n=parseInt(String(b.id).slice(0,-3),36),rows='';if(n>1e12&&n<4e12)rows+='<div class="ir"><span>Agregado</span><b>'+new Date(n).toLocaleDateString('es',{day:'numeric',month:'short',year:'numeric'})+'</b></div>';
+if(b.ch){var r=b.p>0?Math.max(0,Math.ceil(b.ch*(1-b.p))):b.ch,u=b.type==='EPUB'?(r===1?'cap\u00edtulo':'cap\u00edtulos'):b.type==='PDF'?(r===1?'p\u00e1gina':'p\u00e1ginas'):(r===1?'secci\u00f3n':'secciones');rows+='<div class="ir"><span>'+(b.p>0?'Te faltan':'Extensi\u00f3n')+'</span><b>'+r+' '+u+'</b></div>'}
+return '<div class="inf">'+(rows?'<h3 class="ih">Tu lectura</h3><div class="ig">'+rows+'</div>':'')+'<h3 class="ih">Sinopsis</h3><p class="isyn" id="dsyn"></p><div class="imore">Toca el texto para leer m\u00e1s</div><div id="dinfw"><h3 class="ih">Datos del libro</h3><div class="ig" id="dinf"></div></div><div id="dauw"><h3 class="ih">Sobre el autor</h3><div class="ab"><div class="auv" id="dauv"></div><div><div class="wt" id="daun"></div><p class="isyn2" id="daub"></p></div></div></div></div>'}
+function dFill(b){var e=$('#dsyn');if(!e||!cur||cur.id!==b.id)return;
+var c=lsGet('pl-bk:'+b.id),o=null;try{o=c&&c.charAt(0)==='{'?JSON.parse(c):null}catch(x){}
+if(o){e.textContent=o.s||'Este libro no tiene sinopsis disponible.';e.className='isyn'+(o.s&&o.s.length>260?' cl':'');var rw=[['P\u00e1ginas',o.pc],['Editorial',o.pu],['A\u00f1o',o.y],['G\u00e9nero',o.g]].filter(function(r){return r[1]});$('#dinf').innerHTML=rw.map(function(r){return '<div class="ir"><span>'+r[0]+'</span><b>'+esc(String(r[1]))+'</b></div>'}).join('');$('#dinfw').style.display=rw.length?'':'none'}
+else{$('#dinfw').style.display='none';e.className='isyn';e.textContent=c&&c.indexOf('x:')===0?'No se encontr\u00f3 la sinopsis de este libro.':navigator.onLine?'Buscando sinopsis\u2026':'Con\u00e9ctate a internet para ver la sinopsis.'}
+var au=auSplit(b.author)[0],w=$('#dauw');if(!au){w.style.display='none';return}
+var ph=lsGet('pl-au:'+au),bio=lsGet('pl-ab:'+au),ok=ph&&ph.indexOf('data:')===0;
+$('#dauv').innerHTML=ok?'<img src="'+ph+'" alt="">':auIni(au);$('#daun').textContent=au;
+$('#daub').textContent=bio&&bio!=='-'?bio:(bio==='-'||(ph&&!ok&&ph!==null&&ph.charAt(0)==='0'&&ph!=='0'))?'No se encontr\u00f3 informaci\u00f3n del autor.':navigator.onLine?'Buscando informaci\u00f3n del autor\u2026':'Con\u00e9ctate a internet para ver al autor.'}
 function dashHTML(){
 var h=greet(),ub=books.filter(function(b){return !b.read}),rdn=books.length-ub.length,last=ub.filter(function(b){return b.p>0}).sort(function(a,b){return b.t-a.t})[0],st=streak(),ds={},C=119.4,i,wk=0;
 readDays().forEach(function(k){ds[k]=1});
@@ -587,7 +626,7 @@ function closeSheet(){document.body.classList.remove('sh')}
 function getB(id){return books.filter(function(b){return b.id===id})[0]}
 function showDetail(id){
 cur=getB(id);if(!cur)return;var b=cur;
-$('#dt').innerHTML='<div class="dt"><div class="cv">'+cov(b)+'</div><h2>'+esc(b.title)+'</h2><p class="sub">'+esc(b.author||'Autor desconocido')+' · '+b.type+'</p></div><div class="st"><div>'+Math.round(b.p*100)+' %<small>Progreso</small></div><div>'+b.type+'<small>Formato</small></div><div>'+(b.p>0?new Date(b.t).toLocaleDateString('es',{day:'numeric',month:'short'}):'—')+'<small>Última lectura</small></div></div><button class="go" style="width:100%" data-read="'+b.id+'">'+(b.p>0?'Seguir leyendo':'Empezar a leer')+'</button><div class="acts"><button data-a="fav" class="'+(b.fav?'on':'')+'">'+ic('heart')+'Favorito</button><button data-a="read" class="'+(b.read?'on':'')+'">'+ic('check')+'Leído</button><button data-a="del">'+ic('trash')+'Eliminar</button></div>';
+$('#dt').innerHTML='<div class="dt"><div class="cv">'+cov(b)+'</div><h2>'+esc(b.title)+'</h2><p class="sub">'+esc(b.author||'Autor desconocido')+' · '+b.type+'</p></div><div class="st"><div>'+Math.round(b.p*100)+' %<small>Progreso</small></div><div>'+b.type+'<small>Formato</small></div><div>'+(b.p>0?new Date(b.t).toLocaleDateString('es',{day:'numeric',month:'short'}):'—')+'<small>Última lectura</small></div></div><button class="go" style="width:100%" data-read="'+b.id+'">'+(b.p>0?'Seguir leyendo':'Empezar a leer')+'</button><div class="acts"><button data-a="fav" class="'+(b.fav?'on':'')+'">'+ic('heart')+'Favorito</button><button data-a="read" class="'+(b.read?'on':'')+'">'+ic('check')+'Leído</button><button data-a="del">'+ic('trash')+'Eliminar</button></div>'+detInfo(b);dFill(b);dLoad(b);
 if(!$('#detail').classList.contains('on'))push('#detail')
 }
 function act(b,a){
@@ -633,6 +672,7 @@ if((x=t.closest('[data-fmt]'))){fmtSel=x.dataset.fmt;srch=false;q='';return rend
 if(t.closest('#fb')){fmtSel=null;srch=false;q='';return render()}
 if(t.closest('#vw')){var vl=['grid', 'list', 'shelf', 'mag'];setVal('view',vl[(vl.indexOf(view)+1)%vl.length]);return render()}
 if((x=t.closest('[data-au]'))){var an=x.dataset.au,cc=null;try{cc=localStorage.getItem('pl-au:'+an)}catch(e){}if(!(cc&&cc.indexOf('data:')===0)){try{localStorage.removeItem('pl-au:'+an)}catch(e){}auBusy[an]=0;auFetch(an)}return}
+if(t.closest('#dsyn')){t.closest('#dsyn').classList.toggle('cl');return}
 if(t.closest('#sx')){srch=false;q='';return render()}
 if((x=t.closest('[data-fmt]'))){pend=x.dataset.fmt;var fi=$('#file');fi.removeAttribute('accept');closeSheet();return fi.click()}
 if(t.id==='dshade')return back();
