@@ -343,6 +343,14 @@ body.sh #sheet{transform:none}
 .wcv{width:56px;flex-shrink:0;box-shadow:0 4px 12px rgba(0,0,0,.35)}
 .wbar{height:4px;border-radius:2px;background:var(--s2);margin-top:8px;overflow:hidden}
 .wbar i{display:block;height:100%;background:var(--ac);border-radius:2px}
+.aus{margin:2px 0 14px}
+.aut{margin:0 2px 10px}
+.aur{display:flex;gap:14px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
+.aur::-webkit-scrollbar{display:none}
+.aui{flex:0 0 auto;width:68px;text-align:center}
+.auv{width:60px;height:60px;border-radius:50%;margin:0 auto;overflow:hidden;background:var(--s1);border:2px solid var(--ac);display:flex;align-items:center;justify-content:center;color:var(--ac);font-weight:600;font-size:20px}
+.auv img{width:100%;height:100%;object-fit:cover;display:block}
+.aun{font-size:11px;line-height:1.25;color:var(--t2);margin-top:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 </style>
 </head>
 <body>
@@ -414,6 +422,17 @@ function hue(s){var a=0;for(var i=0;i<s.length;i++)a+=s.charCodeAt(i);return a%3
 function cov(b){return b.cover?'<img src="'+b.cover+'" alt="">':'<div class="ph" style="background:hsl('+hue(b.title)+' 45% 28%)">'+esc(b.title)+'</div>'}
 function toData(u){return fetch(u).then(function(r){return r.blob()}).then(function(bl){return new Promise(function(ok){var f=new FileReader();f.onload=function(){ok(f.result)};f.readAsDataURL(bl)})})}
 function shown(){return books.filter(function(b){return tab==='lib'?!b.read:tab==='fav'?b.fav:b.read}).filter(function(b){return filt==='all'||b.type===filt})}
+var auBusy={};
+function auNames(){var src=books.filter(function(b){return !b.read&&b.p>0});if(!src.length)src=books.filter(function(b){return !b.read});var seen={},out=[];src.forEach(function(b){String(b.author||'').split(/\s*(?:,|;|&|\sy\s|\sand\s)\s*/i).forEach(function(n){n=n.replace(/\s+/g,' ').trim();var k=n.toLowerCase();if(n.length<3||n.length>60||seen[k]||/^(desconocid|an[o\u00f3]nim|sin autor|unknown|epub|pdf|word)/i.test(n))return;seen[k]=1;out.push(n)})});return out.slice(0,10)}
+function auIni(n){var p=n.split(' ').filter(Boolean);return esc((p[0][0]+(p.length>1?p[p.length-1][0]:'')).toUpperCase())}
+function auSet(n,v){document.querySelectorAll('.aui').forEach(function(e){if(e.dataset.au===n&&v&&v!=='0')e.querySelector('.auv').innerHTML='<img src="'+v+'" alt="">'})}
+function auFetch(n){if(auBusy[n]||!navigator.onLine)return;auBusy[n]=1;var T=['es','en'],W=/escritor|autor|novelist|poet|periodist|dramaturg|ensayist|guionist|writer|author|journalist|playwright|essayist|screenwriter|fil[o\u00f3]sof|philosopher|historiad|historian|cient[i\u00ed]fic|scientist|ilustrador|illustrator/i;
+(function t(i){if(i>=T.length){try{localStorage.setItem('pl-au:'+n,'0')}catch(e){}auBusy[n]=0;return}
+fetch('https://'+T[i]+'.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(n.replace(/ /g,'_'))).then(function(r){return r.ok?r.json():null}).then(function(j){
+if(!j||j.type!=='standard'||!j.thumbnail||!j.thumbnail.source||!W.test(j.description||''))return t(i+1);
+return fetch(j.thumbnail.source).then(function(r){return r.blob()}).then(function(bl){var im=new Image(),u=URL.createObjectURL(bl);im.onload=function(){try{var c=document.createElement('canvas'),S=112,w=im.naturalWidth,h=im.naturalHeight,m=Math.min(w,h);c.width=c.height=S;c.getContext('2d').drawImage(im,(w-m)/2,(h-m)*.15,m,m,0,0,S,S);var d=c.toDataURL('image/jpeg',.82);localStorage.setItem('pl-au:'+n,d);auSet(n,d)}catch(e){}URL.revokeObjectURL(u);auBusy[n]=0};im.onerror=function(){URL.revokeObjectURL(u);t(i+1)};im.src=u})
+}).catch(function(){auBusy[n]=0})})(0)}
+function auHTML(){var a=auNames();if(!a.length)return '';return '<div class="aus"><div class="wt aut">Autores que lees</div><div class="aur">'+a.map(function(n){var c=null;try{c=localStorage.getItem('pl-au:'+n)}catch(e){}if(c===null)auFetch(n);return '<div class="aui" data-au="'+esc(n)+'"><div class="auv">'+(c&&c!=='0'?'<img src="'+c+'" alt="">':auIni(n))+'</div><div class="aun">'+esc(n)+'</div></div>'}).join('')+'</div></div>'}
 function dashHTML(){
 var h=greet(),ub=books.filter(function(b){return !b.read}),rdn=books.length-ub.length,last=ub.filter(function(b){return b.p>0}).sort(function(a,b){return b.t-a.t})[0],st=streak(),ds={},C=119.4,i,wk=0;
 readDays().forEach(function(k){ds[k]=1});
@@ -429,6 +448,7 @@ h+='<div class="wd wide"><div class="cmr">';
 for(var k=2;k>=0;k--){var m0=new Date(nw.getFullYear(),nw.getMonth()-k,1),nd=new Date(m0.getFullYear(),m0.getMonth()+1,0).getDate();h+='<div class="cmo"><div class="cml">'+M[m0.getMonth()]+'</div><div class="cdt">';for(i=0;i<35;i++){if(i>=nd){h+='<i style="visibility:hidden"></i>';continue}var dk=dayKey(new Date(m0.getFullYear(),m0.getMonth(),i+1)),cl=(ds[dk]?'on ':'')+(dk===dayKey()?'td':'');h+='<i'+(cl?' class="'+cl.trim()+'"':'')+'></i>'}h+='</div></div>'}
 h+='</div><div class="wrow"><span class="rn">'+ub.length+'</span><div><div class="wt">'+(ub.length===1?'Libro en tu biblioteca':'Libros en tu biblioteca')+'</div><div class="wm">'+rdn+(rdn===1?' le\u00eddo':' le\u00eddos')+'</div></div></div></div>';
 h+='<div class="wd wide wrow2"><div><div class="wt">Esta semana</div><div class="wm">D\u00edas que le\u00edste</div></div><div class="wn">'+wk+'<small>/ 7</small></div></div>';
+h+=auHTML();
 return h}
 function greet(){var h=new Date().getHours(),n=localStorage.getItem('pl-name')||'';return '<h1 class="hi">'+(h<12?'Buenos días':h<19?'Buenas tardes':'Buenas noches')+(n?', '+esc(n):'')+'</h1><p class="sub2">'+(h<12?'Empieza el día con una buena página':h<19?'Una tarde perfecta para seguir leyendo':'La noche es para perderse en una historia')+'</p>'}
 function dayKey(d){d=d||new Date();return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2)}
