@@ -324,12 +324,13 @@ body.sh #sheet{transform:none}
 .wn{font-size:34px;font-weight:600;line-height:1}
 .wn small{font-size:13px;color:var(--t2);font-weight:400;margin-left:4px}
 .wd.wide{min-height:0;margin-bottom:10px;gap:12px}
-.mrow{display:flex;justify-content:space-around;width:100%}
-.mc{text-align:center}
-.ml{font-size:12px;margin-bottom:8px}
-.dots{display:grid;grid-template-columns:repeat(5,5px);grid-template-rows:repeat(7,5px);grid-auto-flow:column;gap:4px;justify-content:center}
-.dots i{width:5px;height:5px;border-radius:50%;background:var(--s2)}
-.dots i.on{background:var(--tx)}
+.cmr{display:flex;justify-content:space-around;width:100%}
+.cmo{text-align:center}
+.cml{font-size:12px;color:var(--t2);margin-bottom:10px;font-weight:500}
+.cdt{display:grid;grid-template-columns:repeat(5,7px);grid-template-rows:repeat(7,7px);grid-auto-flow:column;gap:5px;justify-content:center}
+.cdt i{width:7px;height:7px;border-radius:50%;background:var(--s2)}
+.cdt i.on{background:var(--ac)}
+.cdt i.td{box-shadow:0 0 0 1.5px var(--tx)}
 .wrow{display:flex;align-items:center;gap:10px}
 .rn{width:34px;height:34px;border-radius:50%;border:3px solid var(--ac);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
 .wrow2{flex-direction:row;align-items:center}
@@ -337,6 +338,9 @@ body.sh #sheet{transform:none}
 .wd.ft{min-height:0;align-items:center;text-align:center;gap:4px;padding:12px 4px}
 .rb2{width:40px;height:40px;border-radius:50%;background:var(--s1);border:1px solid var(--s2);color:var(--ac);display:flex;align-items:center;justify-content:center;margin-left:8px;flex-shrink:0}
 .tabs{margin:0 14px calc(8px + var(--sab));border-radius:28px;border:1px solid var(--s2);padding:10px 0}
+.wcv{width:56px;flex-shrink:0;box-shadow:0 4px 12px rgba(0,0,0,.35)}
+.wbar{height:4px;border-radius:2px;background:var(--s2);margin-top:8px;overflow:hidden}
+.wbar i{display:block;height:100%;background:var(--ac);border-radius:2px}
 </style>
 </head>
 <body>
@@ -413,12 +417,13 @@ var h=greet(),ub=books.filter(function(b){return !b.read}),rdn=books.length-ub.l
 readDays().forEach(function(k){ds[k]=1});
 for(i=0;i<7;i++){var d0=new Date();d0.setDate(d0.getDate()-i);if(ds[dayKey(d0)])wk++}
 h+='<div class="wg2">';
-if(last){var pc=Math.round(last.p*100);h+='<button class="wd" data-open="'+last.id+'"><svg width="46" height="46" viewBox="0 0 46 46" aria-hidden="true"><circle cx="23" cy="23" r="19" fill="none" stroke="var(--s2)" stroke-width="4"/><circle cx="23" cy="23" r="19" fill="none" stroke="var(--ac)" stroke-width="4" stroke-linecap="round" stroke-dasharray="'+C+'" stroke-dashoffset="'+(C*(1-last.p)).toFixed(1)+'" transform="rotate(-90 23 23)"/></svg><div><div class="wt">'+esc(last.title)+'</div><div class="wm">Continuar \u00b7 '+pc+'%</div></div></button>'}
+var nb=last||ub.slice().sort(function(x,y){return y.t-x.t})[0];
+if(nb){var pc=Math.round(nb.p*100);h+='<button class="wd" data-open="'+nb.id+'"><div class="cv wcv">'+cov(nb)+'</div><div style="width:100%"><div class="wt">'+esc(nb.title)+'</div><div class="wm">'+(last?'Continuar \u00b7 '+pc+'%':'Empieza a leer')+'</div>'+(last?'<div class="wbar"><i style="width:'+pc+'%"></i></div>':'')+'</div></button>'}
 else h+='<div class="wd"><span class="wi">'+ic('book',30)+'</span><div><div class="wt">Empieza a leer</div><div class="wm">A\u00f1ade tu primer libro</div></div></div>';
 h+='<div class="wd"><span class="wi">'+ic('flame',26)+'</span><div><div class="wn">'+st+'<small>'+(st===1?'d\u00eda':'d\u00edas')+'</small></div><div class="wt">Racha</div><div class="wm">'+(st?'\u00a1Sigue as\u00ed!':'Lee hoy para empezar')+'</div></div></div></div>';
 var M=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'],nw=new Date();
-h+='<div class="wd wide"><div class="mrow">';
-for(var k=2;k>=0;k--){var m0=new Date(nw.getFullYear(),nw.getMonth()-k,1),nd=new Date(m0.getFullYear(),m0.getMonth()+1,0).getDate();h+='<div class="mc"><div class="ml">'+M[m0.getMonth()]+'</div><div class="dots">';for(i=0;i<35;i++){h+=i>=nd?'<i style="visibility:hidden"></i>':'<i'+(ds[dayKey(new Date(m0.getFullYear(),m0.getMonth(),i+1))]?' class="on"':'')+'></i>'}h+='</div></div>'}
+h+='<div class="wd wide"><div class="cmr">';
+for(var k=2;k>=0;k--){var m0=new Date(nw.getFullYear(),nw.getMonth()-k,1),nd=new Date(m0.getFullYear(),m0.getMonth()+1,0).getDate();h+='<div class="cmo"><div class="cml">'+M[m0.getMonth()]+'</div><div class="cdt">';for(i=0;i<35;i++){if(i>=nd){h+='<i style="visibility:hidden"></i>';continue}var dk=dayKey(new Date(m0.getFullYear(),m0.getMonth(),i+1)),cl=(ds[dk]?'on ':'')+(dk===dayKey()?'td':'');h+='<i'+(cl?' class="'+cl.trim()+'"':'')+'></i>'}h+='</div></div>'}
 h+='</div><div class="wrow"><span class="rn">'+ub.length+'</span><div><div class="wt">'+(ub.length===1?'Libro en tu biblioteca':'Libros en tu biblioteca')+'</div><div class="wm">'+rdn+(rdn===1?' le\u00eddo':' le\u00eddos')+'</div></div></div></div>';
 h+='<div class="wd wide wrow2"><div><div class="wt">Esta semana</div><div class="wm">D\u00edas que le\u00edste</div></div><div class="wn">'+wk+'<small>/ 7</small></div></div>';
 h+='<div class="fts">'+['EPUB','PDF','Word'].map(function(f){var n=ub.filter(function(b){return b.type===f}).length;return '<button class="wd ft" data-fmt="'+f+'"><span class="wi">'+ic(f==='PDF'?'pdf':f==='Word'?'word':'book',26)+'</span><div class="wt">'+f+'</div><div class="wm">'+(P2.cnt?n+(n===1?' libro':' libros'):'')+'</div></button>'}).join('')+'</div>';
