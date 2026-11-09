@@ -634,7 +634,7 @@ var TH=[['auto','Automático',''],['claro','Beige claro','#8B5A3C'],['oscuro','C
 var theme=localStorage.getItem('pl-theme')||'auto',view=localStorage.getItem('pl-view')||'grid';
 function applyTheme(){var t=theme==='auto'?(matchMedia('(prefers-color-scheme: light)').matches?'claro':'oscuro'):theme;document.documentElement.dataset.th=t;var m=document.querySelector('meta[name=theme-color]');if(m)m.content=getComputedStyle(document.documentElement).getPropertyValue('--bg').trim()}
 function note(t,m){openSheet('<h3 class="sh2">'+t+'</h3><p class="cn" style="margin:0 0 16px">'+m+'</p><button class="go" style="width:100%;margin:0" data-no>Entendido</button>')}
-var P2={fs:localStorage.getItem('pl-fs')||'m',sort:localStorage.getItem('pl-sort')||'fecha',rm:localStorage.getItem('pl-rm')||'sepia',cnt:localStorage.getItem('pl-cnt')!=='0',auto:localStorage.getItem('pl-auto')==='1',flip:localStorage.getItem('pl-flip')!=='0',anim:localStorage.getItem('pl-anim')==='1'},trash=[];
+var P2={fs:localStorage.getItem('pl-fs')||'m',sort:localStorage.getItem('pl-sort')||'fecha',rm:localStorage.getItem('pl-rm')||'sepia',cnt:localStorage.getItem('pl-cnt')!=='0',auto:localStorage.getItem('pl-auto')==='1',flip:localStorage.getItem('pl-flip')!=='0',anim:localStorage.getItem('pl-anim')!=='0'},trash=[];
 if(P2.anim)document.documentElement.classList.add('anim-on');
 var RM={claro:['#FFFFFF','#1A1A1A','#6B6B6B','#E2E2E2'],oscuro:['#14191C','#D8DEE2','#8A969E','#2B343A'],sepia:['#F3ECDD','#2B2620','#6B6252','#DDD3BC']},FS={s:15,m:17,l:20};
 var OPT={theme:TH,fs:[['s','Pequeño'],['m','Normal'],['l','Grande']],sort:[['fecha','Fecha'],['nombre','Nombre'],['formato','Formato']],view:VW,rm:[['claro','Claro'],['oscuro','Oscuro'],['sepia','Sepia']]},TIT={theme:'Tema',fs:'Tamaño de texto',sort:'Ordenar libros por',view:'Vista de libros',rm:'Modo de lectura'};
@@ -652,7 +652,7 @@ function swr(i,t,x,k,on){return '<button class="row" data-cf="'+k+'"><span class
 function renderConfig(){
 var G=function(h){return '<div class="grp">'+h+'</div>'};
 $('#cfg').innerHTML='<p class="sl" style="margin-top:6px">CUENTA</p>'+G(cr('user','Conectar cuenta','','acc','Guarda tus libros para no perderlos si cambias de celular'))
-+'<p class="sl">APARIENCIA</p>'+G(cr('moon','Tema',label('theme',theme),'theme')+cr('type','Tamaño de texto',label('fs',P2.fs),'fs')+swr('star','Animaciones siempre activas','Actívalo si tu celular tiene reducir animaciones','anim',P2.anim))
++'<p class="sl">APARIENCIA</p>'+G(cr('moon','Tema',label('theme',theme),'theme')+cr('type','Tamaño de texto',label('fs',P2.fs),'fs')+swr('star','Animaciones','Si las apagas, la app se ve más quieta y gasta menos batería','anim',P2.anim))
 +'<p class="sl">BIBLIOTECA</p>'+G(cr('sort','Ordenar libros por',label('sort',P2.sort),'sort')+cr('grid','Vista de libros',label('view',view),'view')+swr('hash','Mostrar contadores de libros','','cnt',P2.cnt))
 +'<p class="sl">LECTURA</p>'+G(cr('book','Modo de lectura',label('rm',P2.rm),'rm')+swr('books','Paso de página animado','Efecto de hoja al pasar de página','flip',P2.flip)+swr('sun','Brillo automático','Atenúa la lectura de noche','auto',P2.auto))
 +'<p class="sl">DATOS Y ALMACENAMIENTO</p>'+G(cr('db','Espacio usado','…','')+cr('trash','Vaciar papelera',trash.length?String(trash.length):'','trash')+cr('upload','Exportar biblioteca','','export')+cr('download','Restaurar desde un archivo','','restore'))
