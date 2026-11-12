@@ -104,6 +104,14 @@ p{margin:0}
 .bn::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.18) 0,rgba(0,0,0,0) 30%,var(--bg) 100%)}
 .bnw>.ptop,.bnw>.pf{position:relative;z-index:1}
 .ptop .bnc{margin-right:auto;display:flex;align-items:center;gap:6px}
+.bcr{position:fixed;inset:0;z-index:99999;background:var(--bg);color:var(--tx);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:calc(var(--sat) + 16px) 16px calc(var(--sab) + 16px)}
+.bct{margin:0;font-size:15px;color:var(--t2);text-align:center}
+.bcf{position:relative;overflow:hidden;border-radius:18px;background:var(--s2);touch-action:none;box-shadow:0 0 0 2px var(--ac)}
+.bci{position:absolute;left:50%;top:50%;max-width:none;max-height:none;user-select:none;-webkit-user-drag:none;pointer-events:none}
+.bcz{width:min(86%,420px);accent-color:var(--ac)}
+.bcb{display:flex;gap:12px}
+.bcb button{padding:12px 24px;border:0;border-radius:999px;font:inherit;font-weight:600;background:var(--s2);color:var(--tx)}
+.bcb .ok{background:var(--ac);color:var(--on)}
 .pst{display:flex;align-items:center;margin-top:18px}
 .ps{flex:1;text-align:center}
 .ps b{display:flex;align-items:center;justify-content:center;gap:6px;font-size:18px;font-weight:600}
@@ -769,7 +777,22 @@ catch(e){note('No se pudo restaurar','El archivo no parece ser una copia de Pola
 function photoSheet(){var has=(pedit&&draftPh!==undefined)?!!draftPh:!!localStorage.getItem('pl-photo');
 openSheet('<h3 class="sh2">Foto de perfil</h3><button class="r" data-ph="cam">'+ic('camera')+'Tomar foto</button><button class="r" data-ph="gal">'+ic('image')+'Elegir de la galería</button>'+(has?'<button class="r d" data-ph="del">'+ic('trash')+'Eliminar foto actual</button>':''))}
 function bannerSheet(){var has=(pedit&&draftBn!==undefined)?!!draftBn:!!localStorage.getItem('pl-banner');openSheet('<h3 class="sh2">Banner del perfil</h3><button class="r" data-bn="gal">'+ic('image')+'Elegir de la galería</button>'+(has?'<button class="r d" data-bn="del">'+ic('trash')+'Quitar banner</button>':''))}
-function pickBanner(){var f=this.files[0];this.value='';if(!f)return;var im=new Image(),u=URL.createObjectURL(f);im.onload=function(){try{var W=900,H=520,c=document.createElement('canvas');c.width=W;c.height=H;var k=Math.max(W/im.width,H/im.height),w=im.width*k,hh=im.height*k;c.getContext('2d').drawImage(im,(W-w)/2,(H-hh)/2,w,hh);draftBn=c.toDataURL('image/jpeg',.82)}catch(e){note('No se pudo usar la imagen','Prueba con otra.')}URL.revokeObjectURL(u);render()};im.onerror=function(){URL.revokeObjectURL(u);note('No se pudo abrir la imagen','Prueba con otra en formato JPG o PNG.')};im.src=u}
+function bannerCrop(im,u){var q=$('.bn'),r=q?q.getBoundingClientRect():{width:360,height:280},ar=Math.max(.8,Math.min(2.2,(r.width/r.height)||1.3)),fw=Math.min(window.innerWidth-32,520),fh=fw/ar,mh=window.innerHeight-250;if(fh>mh){fh=mh;fw=fh*ar}fw=Math.round(fw);fh=Math.round(fh);
+var iw=im.naturalWidth||im.width,ih=im.naturalHeight||im.height,s0=Math.max(fw/iw,fh/ih),z=1,ox=0,oy=0,ps={},d0=0,z0=1,o=document.createElement('div');
+o.className='bcr';o.innerHTML='<p class="bct">Mueve y acerca la foto para elegir qué parte se ve</p><div class="bcf" style="width:'+fw+'px;height:'+fh+'px"><img class="bci" alt=""></div><input class="bcz" type="range" min="100" max="300" value="100" aria-label="Acercar"><div class="bcb"><button data-bc="x">Cancelar</button><button class="ok" data-bc="ok">Listo</button></div>';
+document.body.appendChild(o);
+var f=o.querySelector('.bcf'),g=o.querySelector('.bci'),sl=o.querySelector('.bcz');g.src=u;
+function ap(){var w=iw*s0*z,h=ih*s0*z,mx=(w-fw)/2,my=(h-fh)/2;ox=Math.max(-mx,Math.min(mx,ox));oy=Math.max(-my,Math.min(my,oy));g.style.width=w+'px';g.style.height=h+'px';g.style.transform='translate(calc(-50% + '+ox+'px),calc(-50% + '+oy+'px))'}
+function cl(){URL.revokeObjectURL(u);o.remove()}
+ap();
+f.onpointerdown=function(e){try{f.setPointerCapture(e.pointerId)}catch(x){}ps[e.pointerId]=[e.clientX,e.clientY];var a=Object.keys(ps).map(function(k){return ps[k]});if(a.length===2){d0=Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1]);z0=z}};
+f.onpointermove=function(e){var p=ps[e.pointerId];if(!p)return;var n=Object.keys(ps).length;if(n===2){ps[e.pointerId]=[e.clientX,e.clientY];var a=Object.keys(ps).map(function(k){return ps[k]}),dd=Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1]);if(d0){z=Math.max(1,Math.min(3,z0*dd/d0));sl.value=Math.round(z*100)}}else{ox+=e.clientX-p[0];oy+=e.clientY-p[1];ps[e.pointerId]=[e.clientX,e.clientY]}ap()};
+f.onpointerup=f.onpointercancel=function(e){delete ps[e.pointerId];d0=0};
+sl.oninput=function(){z=sl.value/100;ap()};
+o.onclick=function(e){var t=e.target.closest('[data-bc]');if(!t)return;if(t.dataset.bc==='x')return cl();
+try{var W=900,H=Math.round(W*fh/fw),k=W/fw,w=iw*s0*z,h=ih*s0*z,c=document.createElement('canvas');c.width=W;c.height=H;c.getContext('2d').drawImage(im,(fw/2+ox-w/2)*k,(fh/2+oy-h/2)*k,w*k,h*k);draftBn=c.toDataURL('image/jpeg',.85)}catch(x){cl();return note('No se pudo usar la imagen','Prueba con otra.')}
+cl();render()}}
+function pickBanner(){var f=this.files[0];this.value='';if(!f)return;var im=new Image(),u=URL.createObjectURL(f);im.onload=function(){bannerCrop(im,u)};im.onerror=function(){URL.revokeObjectURL(u);note('No se pudo abrir la imagen','Prueba con otra en formato JPG o PNG.')};im.src=u}
 function chLbl(b){var n=b.ch;if(!n)return '';return n+' '+(b.type==='EPUB'?(n===1?'capítulo':'capítulos'):b.type==='PDF'?(n===1?'página':'páginas'):(n===1?'sección':'secciones'))}
 function card(b){var pc=Math.round(b.p*100),pr=b.p>0&&!b.read,nw=!pr&&!b.read&&Date.now()-parseInt(String(b.id).slice(0,-3),36)<6048e5,
 ring=pr?'<svg class="prg" viewBox="0 0 36 36" aria-hidden="true"><circle cx="18" cy="18" r="14" fill="rgba(24,16,11,.7)" stroke="rgba(255,255,255,.2)" stroke-width="3"/><circle cx="18" cy="18" r="14" fill="none" stroke="#D2A679" stroke-width="3" stroke-linecap="round" stroke-dasharray="88" stroke-dashoffset="'+(88*(1-b.p)).toFixed(1)+'" transform="rotate(-90 18 18)"/><text x="18" y="21.5" text-anchor="middle" font-size="9" fill="#F5EBDA">'+pc+'%</text></svg>':'<span class="chv">'+ic('chev',20)+'</span>',
