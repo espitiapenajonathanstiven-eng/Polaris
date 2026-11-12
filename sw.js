@@ -1,36 +1,57 @@
-/* Polaris – service worker: la app abre y lee sin internet (los lectores ya vienen dentro de index.html) */
-var CACHE = 'polaris-cache-v4';
-var APP = ['./', './index.html', './manifest.json', './icono.png'];
+/* Polaris - service worker
+   index.html se pide primero a internet (así los cambios llegan solos) y, si no hay conexión, se usa la copia guardada.
+   Todo lo demás (iconos, manifest) se sirve desde la copia guardada para que la app abra sin internet. */
+const CACHE = 'polaris-cache-v6';
+const ASSETS = ['./', './index.html', './manifest.json', './icono.png', './polaris-icon-192.png', './polaris-icon-512.png', './polaris-icon-maskable.png'];
 
 self.addEventListener('install', function (e) {
   e.waitUntil(
-    caches.open(CACHE).then(function (c) {
-      return Promise.all(APP.map(function (u) { return c.add(u).catch(function () {}); }));
-    }).then(function () { return self.skipWaiting(); })
+    caches.open(CACHE)
+      .then(function (c) { return Promise.all(ASSETS.map(function (u) { return c.add(u).catch(function () {}); })); })
+      .then(function () { return self.skipWaiting(); })
   );
 });
 
 self.addEventListener('activate', function (e) {
   e.waitUntil(
-    caches.keys().then(function (ks) {
-      return Promise.all(ks.filter(function (k) { return k !== CACHE; }).map(function (k) { return caches.delete(k); }));
-    }).then(function () { return self.clients.claim(); })
+    caches.keys()
+      .then(function (ks) { return Promise.all(ks.filter(function (k) { return k !== CACHE; }).map(function (k) { return caches.delete(k); })); })
+      .then(function () { return self.clients.claim(); })
   );
 });
 
 self.addEventListener('fetch', function (e) {
-  var r = e.request;
-  if (r.method !== 'GET' || new URL(r.url).origin !== location.origin) return;
-  /* con internet trae la versión nueva; sin internet usa la guardada */
+  var req = e.request;
+  if (req.method !== 'GET') return;
+  var url = new URL(req.url);
+  if (url.origin !== location.origin) return;
+
+  var isPage = req.mode === 'navigate' || url.pathname.endsWith('/') || url.pathname.endsWith('/index.html');
+  if (isPage) {
+    e.respondWith(
+      fetch(req, { cache: 'no-store' })
+        .then(function (res) {
+          var copy = res.clone();
+          caches.open(CACHE).then(function (c) { c.put('./index.html', copy); });
+          return res;
+        })
+        .catch(function () {
+          return caches.match('./index.html').then(function (r) { return r || caches.match('./'); });
+        })
+    );
+    return;
+  }
+
   e.respondWith(
-    fetch(r).then(function (res) {
-      if (res && res.status === 200) {
-        var cp = res.clone();
-        caches.open(CACHE).then(function (c) { c.put(r, cp); });
-      }
-      return res;
-    }).catch(function () {
-      return caches.match(r).then(function (hit) { return hit || caches.match('./index.html'); });
+    caches.match(req).then(function (hit) {
+      if (hit) return hit;
+      return fetch(req).then(function (res) {
+        if (res && res.status === 200) {
+          var copy = res.clone();
+          caches.open(CACHE).then(function (c) { c.put(req, copy); });
+        }
+        return res;
+      });
     })
   );
 });
